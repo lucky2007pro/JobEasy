@@ -57,6 +57,57 @@
                 </form>
             </div>
         </div>
+        </div>
+        
+        <!-- Reviews Section -->
+        <div class="mt-12 glass rounded-[3rem] p-8 md:p-12 shadow-2xl border border-slate-700/50">
+            <h2 class="text-3xl font-bold mb-8">Izohlar va Baholar</h2>
+            
+            <%c++ if (is_logged_in) { %>
+            <div class="mb-10 bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
+                <form action="/api/review" method="POST" class="space-y-4">
+                    <input type="hidden" name="product_id" value="<%c++ ProductDetail_tmp_stream << product.at("id"); %>">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-400 uppercase mb-2">Baholang (1 dan 5 gacha)</label>
+                        <select name="rating" class="p-3 bg-slate-800 focus:outline-none border border-slate-600 rounded-xl text-white">
+                            <option value="5">⭐⭐⭐⭐⭐ Juda zo'r!</option>
+                            <option value="4">⭐⭐⭐⭐ Yaxshi</option>
+                            <option value="3">⭐⭐⭐ O'rtacha</option>
+                            <option value="2">⭐⭐ Menga yoqmadi</option>
+                            <option value="1">⭐ Rostdan ham yomon</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-400 uppercase mb-2">Fikringiz</label>
+                        <textarea name="comment" rows="3" class="w-full p-4 bg-slate-800 border border-slate-600 rounded-xl text-white outline-none focus:border-cyan-500" placeholder="Mahsulot haqida nima deysiz?"></textarea>
+                    </div>
+                    <button class="bg-cyan-500 text-slate-900 px-6 py-3 rounded-xl font-bold hover:bg-cyan-400 transition">Izohni yuborish</button>
+                </form>
+            </div>
+            <%c++ } else { %>
+            <div class="mb-10 p-6 bg-slate-800/30 rounded-2xl border border-slate-800 text-center">
+                <p class="text-slate-400">Izoh qoldirish uchun tizimga kiring.</p>
+                <a href="/api/login" class="text-cyan-400 font-bold hover:underline mt-2 inline-block">Tizimga kirish</a>
+            </div>
+            <%c++ } %>
+
+            <div class="space-y-6">
+                <!-- Static UI mockup for reviews -->
+                <div class="p-6 bg-slate-900/30 rounded-2xl border border-slate-800">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-fuchsia-500 rounded-full flex items-center justify-center text-white font-bold">U</div>
+                            <div>
+                                <h4 class="font-bold text-slate-200">Foydalanuvchi</h4>
+                                <span class="text-xs text-slate-500">Biroz oldin</span>
+                            </div>
+                        </div>
+                        <div class="text-yellow-400 tracking-widest">⭐⭐⭐⭐⭐</div>
+                    </div>
+                    <p class="text-slate-300 font-light">Bu mahsulot kutilganidan juda zo'r ekan! Menga manzur keldi.</p>
+                </div>
+            </div>
+        </div>
     </main>
 </body>
 </html>

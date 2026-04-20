@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: cybershop_app
+    ports:
+      - "80:8848"
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    image: postgres:15
+    container_name: cybershop_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: hojiakbar
+      POSTGRES_DB: jobeasy_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/1_schema.sql
+      - ./upgrade_v2.sql:/docker-entrypoint-initdb.d/2_upgrade_v2.sql
+    restart: always
+
+volumes:
+  pgdata:

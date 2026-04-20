@@ -3,6 +3,10 @@
 #include <map>
 
 void AdminController::dashboard(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
+    if (!req->session()->find("user_id") || req->session()->get<std::string>("user_role") != "admin") {
+        callback(HttpResponse::newRedirectionResponse("/api/login"));
+        return;
+    }
     auto dbClient = drogon::app().getDbClient("default");
 
     dbClient->execSqlAsync(
@@ -33,6 +37,10 @@ void AdminController::dashboard(const HttpRequestPtr& req, std::function<void(co
 }
 
 void AdminController::deleteProduct(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback, int id) {
+    if (!req->session()->find("user_id") || req->session()->get<std::string>("user_role") != "admin") {
+        callback(HttpResponse::newRedirectionResponse("/api/login"));
+        return;
+    }
     auto dbClient = drogon::app().getDbClient("default");
 
     dbClient->execSqlAsync(

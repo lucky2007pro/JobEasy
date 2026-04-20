@@ -3,7 +3,7 @@
     {
       "name": "default",
       "rdbms": "postgresql",
-      "host": "127.0.0.1",
+      "host": "db",
       "port": 5432,
       "dbname": "jobeasy_db",
       "user": "postgres",
@@ -15,7 +15,13 @@
     }
   ],
   "app": {
-    "number_of_threads": 1,
+    "listeners": [
+      {
+        "address": "0.0.0.0",
+        "port": 8848
+      }
+    ],
+    "number_of_threads": 0,
     "enable_session": true,
     "session_timeout": 86400,
     "session_cookie_name": "JOBEASY_SESSION",
@@ -49,7 +55,7 @@
       "logfile_base_name": "",
       "log_size_limit": 100000000,
       "max_files": 0,
-      "log_level": "DEBUG",
+      "log_level": "INFO",
       "display_local_time": true
     },
     "run_as_daemon": false,

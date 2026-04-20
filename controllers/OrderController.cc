@@ -4,6 +4,10 @@
 #include <map>
 
 void OrderController::checkout(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
+    if (!req->session()->find("user_id")) {
+        callback(HttpResponse::newRedirectionResponse("/api/login"));
+        return;
+    }
     auto userId = req->session()->get<int>("user_id");
     auto dbClient = drogon::app().getDbClient("default");
     
@@ -63,6 +67,10 @@ void OrderController::checkout(const HttpRequestPtr& req, std::function<void(con
 }
 
 void OrderController::myOrders(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
+    if (!req->session()->find("user_id")) {
+        callback(HttpResponse::newRedirectionResponse("/api/login"));
+        return;
+    }
     auto userId = req->session()->get<int>("user_id");
     auto userName = req->session()->get<std::string>("user_name");
     

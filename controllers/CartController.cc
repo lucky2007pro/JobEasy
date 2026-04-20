@@ -4,6 +4,10 @@
 #include <map>
 
 void CartController::viewCart(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
+    if (!req->session()->find("user_id")) {
+        callback(HttpResponse::newRedirectionResponse("/api/login"));
+        return;
+    }
     auto userId = req->session()->get<int>("user_id");
     auto userName = req->session()->get<std::string>("user_name");
     
@@ -50,6 +54,10 @@ void CartController::viewCart(const HttpRequestPtr& req, std::function<void(cons
 }
 
 void CartController::addToCart(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
+    if (!req->session()->find("user_id")) {
+        callback(HttpResponse::newRedirectionResponse("/api/login"));
+        return;
+    }
     auto userId = req->session()->get<int>("user_id");
     auto params = req->getParameters();
     int productId = std::stoi(params["product_id"]);
@@ -75,6 +83,10 @@ void CartController::addToCart(const HttpRequestPtr& req, std::function<void(con
 }
 
 void CartController::removeFromCart(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback, int cartId) {
+    if (!req->session()->find("user_id")) {
+        callback(HttpResponse::newRedirectionResponse("/api/login"));
+        return;
+    }
     auto userId = req->session()->get<int>("user_id");
     
     auto dbClient = drogon::app().getDbClient("default");

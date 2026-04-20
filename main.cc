@@ -10,10 +10,8 @@ int main() {
         // Maslahat: Fayl yo'li to'g'riligini tekshiring
         drogon::app().loadConfigFile("config.json");
 
-        // 3. Portni manual qo'shish (agar config.json da bo'lmasa)
-        drogon::app().addListener("127.0.0.1", 8848);
-
-        LOG_INFO << "JobEasy Server 8848-portda ishga tushmoqda...";
+        // 3. Portni manual qo'shish o'rniga config.json dan yuklanadi (Production uchun mos)
+        LOG_INFO << "JobEasy Server ishga tushmoqda...";
 
         // 4. Serverni yurgizish
         drogon::app().run();
