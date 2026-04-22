@@ -73,12 +73,12 @@
                                         </div>
                                         <div class="min-w-0">
                                             <h3 class="text-xs font-bold text-slate-800 truncate"><%c++ Cart_tmp_stream << item.at("title"); %></h3>
-                                            <p class="text-[10px] font-black text-amber-700 mt-0.5">$<%c++ Cart_tmp_stream << item.at("price"); %> <span class="text-slate-300 mx-1">×</span> <%c++ Cart_tmp_stream << item.at("quantity"); %></p>
+                                            <p class="text-[10px] font-black text-amber-700 mt-0.5"><%c++ Cart_tmp_stream << item.at("price"); %> so'm <span class="text-slate-300 mx-1">×</span> <%c++ Cart_tmp_stream << item.at("quantity"); %></p>
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-6 shrink-0">
                                         <div class="text-right">
-                                            <p class="text-xs font-black text-slate-900">$<%c++ Cart_tmp_stream << item.at("subtotal"); %></p>
+                                            <p class="text-xs font-black text-slate-900"><%c++ Cart_tmp_stream << item.at("subtotal"); %> so'm</p>
                                         </div>
                                         <form action="/cart/remove/<%c++ Cart_tmp_stream << item.at("cart_id"); %>" method="POST">
                                             <input type="hidden" name="csrf_token" value="<%c++ Cart_tmp_stream << @@.get<std::string>("csrf_token"); %>">
@@ -103,7 +103,7 @@
                         <div class="space-y-4">
                             <div class="flex justify-between items-center text-[11px] font-bold">
                                 <span class="text-slate-400 uppercase tracking-tight">KAYTA HISOLAH:</span>
-                                <span class="text-white tracking-widest">$<%c++ Cart_tmp_stream << total_price; %></span>
+                                <span class="text-white tracking-widest"><%c++ Cart_tmp_stream << total_price; %> so'm</span>
                             </div>
                             <div class="flex justify-between items-center text-[11px] font-bold">
                                 <span class="text-slate-400 uppercase tracking-tight">YETKAZIB BERISH:</span>
@@ -111,11 +111,11 @@
                             </div>
                             <div class="pt-5 mt-5 border-t border-slate-800 flex justify-between items-end">
                                 <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">JAMI SUMMA:</span>
-                                <span class="text-2xl font-black text-white tracking-tighter">$<%c++ Cart_tmp_stream << total_price; %></span>
+                                <span class="text-2xl font-black text-white tracking-tighter"><%c++ Cart_tmp_stream << total_price; %> so'm</span>
                             </div>
                         </div>
                         
-                        <form action="/order/checkout" method="POST" class="mt-8">
+                        <form action="/checkout" method="POST" class="mt-8">
                             <input type="hidden" name="csrf_token" value="<%c++ Cart_tmp_stream << @@.get<std::string>("csrf_token"); %>">
                             <button class="w-full btn-amber py-3.5 text-[10px] uppercase tracking-widest shadow-xl shadow-amber-900/40">TO'LOVGA O'TISH</button>
                         </form>

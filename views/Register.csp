@@ -16,6 +16,7 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
+    <%c++ auto csrf = @@.get<std::string>("csrf_token"); %>
     <div class="flex-grow flex flex-col items-center justify-center p-6 bg-slate-50/50">
         <a href="/" class="flex items-center gap-2 mb-10 group">
             <div class="w-7 h-7 bg-amber-700 rounded-lg flex items-center justify-center text-white font-black text-[11px] shadow-lg shadow-amber-900/20 group-hover:scale-110 transition duration-300">C</div>
@@ -30,7 +31,8 @@
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">CyberShop oilasiga qo'shiling</p>
             </div>
 
-            <form action="/api/register" method="POST" class="space-y-4">
+            <form action="/register" method="POST" class="space-y-4">
+                <input type="hidden" name="csrf_token" value="<%c++ Register_tmp_stream << csrf; %>">
                 <div class="space-y-1.5">
                     <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Ism va Familiya</label>
                     <input type="text" name="full_name" placeholder="Ali Valiyev" required class="input-field">
@@ -49,7 +51,7 @@
             <div class="pt-6 border-t border-slate-50 text-center">
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-tight">
                     Hisobingiz bormi? 
-                    <a href="/api/login" class="text-amber-700 hover:text-amber-800 ml-1">KIRISH</a>
+                    <a href="/login" class="text-amber-700 hover:text-amber-800 ml-1">KIRISH</a>
                 </p>
             </div>
         </div>
@@ -64,8 +66,5 @@
     <footer class="py-8 text-center">
         <p class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">© 2026 CYBERSHOP &middot; ECO-SYSTEM</p>
     </footer>
-</body>
-</html>
->
 </body>
 </html>

@@ -1,278 +1,132 @@
-<%view Wallet %>
-<%c++
-    auto balance = @@.get<std::string>("balance");
-    auto cards = @@.get<std::vector<std::map<std::string, std::string>>>("cards");
-    auto transactions = @@.get<std::vector<std::map<std::string, std::string>>>("transactions");
-%>
 <!DOCTYPE html>
 <html lang="uz">
 <head>
     <meta charset="UTF-8">
-    <title>Mening Hamyonim - CyberShop</title>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShop | Hamyon</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-dark: #4f46e5;
-            --secondary: #10b981;
-            --bg: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
-        body { background: var(--bg); color: var(--text-main); }
-
-        .container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
-
-        /* Header */
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .header h1 { font-size: 28px; font-weight: 700; color: var(--text-main); }
-        .back-btn { display: flex; align-items: center; gap: 8px; color: var(--text-muted); text-decoration: none; font-weight: 500; transition: 0.3s; }
-        .back-btn:hover { color: var(--primary); }
-
-        .dashboard-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; }
-
-        /* Balance Card */
-        .balance-card {
-            background: linear-gradient(135deg, var(--primary), #8b5cf6);
-            padding: 35px;
-            border-radius: 24px;
-            color: white;
-            box-shadow: 0 20px 25px -5px rgba(99, 102, 241, 0.2);
-            position: relative;
-            overflow: hidden;
-        }
-        .balance-card::after {
-            content: '';
-            position: absolute;
-            top: -50px;
-            right: -50px;
-            width: 150px;
-            height: 150px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-        }
-        .balance-label { font-size: 14px; opacity: 0.9; margin-bottom: 10px; display: block; text-transform: uppercase; letter-spacing: 1px; }
-        .balance-amount { font-size: 42px; font-weight: 700; margin-bottom: 25px; display: block; }
-        .action-btns { display: flex; gap: 15px; }
-        .btn {
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: 0.3s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .btn-white { background: white; color: var(--primary); }
-        .btn-white:hover { background: #f1f5f9; transform: translateY(-2px); }
-
-        /* Cards List */
-        .section-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
-        .card-item {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            transition: 0.3s;
-        }
-        .card-item:hover { border-color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .card-icon { width: 48px; height: 32px; background: #f1f5f9; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--text-muted); font-weight: 700; }
-        .card-info { flex: 1; }
-        .card-number { font-weight: 600; font-size: 16px; }
-        .card-holder { font-size: 12px; color: var(--text-muted); text-transform: uppercase; }
-
-        /* Transactions */
-        .transactions-card {
-            background: var(--card-bg);
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            padding: 30px;
-        }
-        .trans-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid var(--bg);
-        }
-        .trans-item:last-child { border-bottom: none; }
-        .trans-left { display: flex; gap: 15px; align-items: center; }
-        .trans-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-        }
-        .icon-topup { background: #ecfdf5; color: #10b981; }
-        .icon-payment { background: #eff6ff; color: #3b82f6; }
-        .trans-info h4 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
-        .trans-info span { font-size: 12px; color: var(--text-muted); }
-        .trans-amount { font-weight: 700; font-size: 16px; }
-        .amount-plus { color: #10b981; }
-        .amount-minus { color: var(--text-main); }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-content {
-            background: white;
-            padding: 35px;
-            border-radius: 24px;
-            width: 100%;
-            max-width: 450px;
-        }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; }
-        .form-control {
-            width: 100%;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            outline: none;
-            font-size: 16px;
-            transition: 0.3s;
-        }
-        .form-control:focus { border-color: var(--primary); ring: 2px rgba(99, 102, 241, 0.1); }
-        .btn-primary { background: var(--primary); color: white; width: 100%; justify-content: center; }
-        .btn-primary:hover { background: var(--primary-dark); }
-
-        @media (max-width: 768px) {
-            .dashboard-grid { grid-template-columns: 1fr; }
-        }
+        body { font-family: 'Outfit', sans-serif; background: #f8fafc; color: #0f172a; }
+        .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 18px; }
+        .hero { background: linear-gradient(135deg, #0f172a, #312e81 60%, #7c3aed); }
+        .soft { color: #64748b; }
+        .btn-main { background: #b45309; color: #fff; border-radius: 12px; font-weight: 700; }
+        .btn-main:hover { background: #92400e; }
+        .field { width: 100%; border: 1px solid #dbe3ef; border-radius: 12px; padding: 12px 14px; outline: none; }
+        .field:focus { border-color: #7c3aed; box-shadow: 0 0 0 4px rgba(124,58,237,0.08); }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <a href="/" class="back-btn"><i class="fas fa-chevron-left"></i> Asosiyga qaytish</a>
-            <h1>Hamyonim</h1>
+<body class="min-h-screen">
+    <%c++
+        using WalletItem = std::map<std::string, std::string>;
+        auto balance = @@.get<std::string>("balance");
+        auto userName = @@.get<std::string>("user_name");
+        auto csrf = @@.get<std::string>("csrf_token");
+        auto &cards = @@.get<std::vector<WalletItem>>("cards");
+        auto &transactions = @@.get<std::vector<WalletItem>>("transactions");
+    %>
+    <div class="max-w-7xl mx-auto px-4 md:px-8 py-10 space-y-8">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-[11px] font-black uppercase tracking-[0.25em] text-slate-400">Moliya markazi</p>
+                <h1 class="text-3xl font-extrabold tracking-tight mt-2">Hamyon</h1>
+            </div>
+            <a href="/" class="text-sm font-bold text-amber-700 hover:text-amber-800">Asosiyga qaytish</a>
         </div>
 
-        <div class="dashboard-grid">
-            <div class="sidebar">
-                <div class="balance-card">
-                    <span class="balance-label">Joriy balans</span>
-                    <span class="balance-amount">[[balance]] <small style="font-size: 18px; font-weight: 400;">so'm</small></span>
-                    <div class="action-btns">
-                        <button class="btn btn-white" onclick="openTopup()"><i class="fas fa-plus"></i> To'ldirish</button>
-                    </div>
+        <div class="grid lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-1 space-y-6">
+                <div class="hero rounded-[22px] text-white p-7 shadow-2xl shadow-indigo-900/15">
+                    <p class="text-xs font-black uppercase tracking-[0.28em] text-indigo-200">Hisob egasi</p>
+                    <h2 class="text-xl font-bold mt-3"><%c++ Wallet_tmp_stream << userName; %></h2>
+                    <p class="text-xs text-indigo-100/80 mt-6">Joriy balans</p>
+                    <div class="text-4xl font-black tracking-tight mt-2"><%c++ Wallet_tmp_stream << balance; %> <span class="text-lg font-medium">so'm</span></div>
                 </div>
 
-                <div style="margin-top: 40px;">
-                    <div class="section-title">
-                        Kartalarim
-                        <a href="/wallet/add-card" style="font-size: 14px; color: var(--primary); text-decoration: none;">+ Yangi karta</a>
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold">Kartalar</h3>
+                        <a href="/wallet/add-card" class="text-sm font-bold text-violet-700">+ Karta qo'shish</a>
                     </div>
-                    <%c++ if (cards.empty()) { %>
-                        <div style="text-align: center; padding: 40px; color: var(--text-muted); background: white; border-radius: 16px; border: 1px dashed var(--border);">
-                            <i class="fas fa-credit-card" style="font-size: 32px; margin-bottom: 10px; display: block;"></i>
-                            Hozircha kartalar yo'q
-                        </div>
-                    <%c++ } else { %>
-                        <%c++ for (auto& card : cards) { %>
-                            <div class="card-item">
-                                <div class="card-icon">{% (card.at("provider")) %}</div>
-                                <div class="card-info">
-                                    <div class="card-number">{% (card.at("number")) %}</div>
-                                    <div class="card-holder">{% (card.at("holder")) %}</div>
+                    <div class="space-y-3">
+                        <%c++ if (cards.empty()) { %>
+                            <div class="rounded-2xl border border-dashed border-slate-200 p-6 text-center soft">Hozircha kartalar yo'q</div>
+                        <%c++ } else { %>
+                            <%c++ for (auto &card : cards) { %>
+                                <div class="rounded-2xl border border-slate-200 px-4 py-4">
+                                    <div class="flex items-center justify-between gap-3">
+                                        <div>
+                                            <p class="text-sm font-black text-slate-800 uppercase"><%c++ Wallet_tmp_stream << card.at("provider"); %></p>
+                                            <p class="text-base font-bold mt-1"><%c++ Wallet_tmp_stream << card.at("number"); %></p>
+                                            <p class="text-xs soft mt-1"><%c++ Wallet_tmp_stream << card.at("holder"); %></p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <i class="fas fa-chevron-right" style="color: var(--border);"></i>
-                            </div>
+                            <%c++ } %>
                         <%c++ } %>
-                    <%c++ } %>
+                    </div>
                 </div>
             </div>
 
-            <div class="main-content">
-                <div class="transactions-card">
-                    <div class="section-title">Oxirgi tranzaksiyalar</div>
-                    <%c++ if (transactions.empty()) { %>
-                        <div style="text-align: center; padding: 60px 0; color: var(--text-muted);">
-                            Hozircha o'tkazmalar mavjud emas
+            <div class="lg:col-span-2 space-y-6">
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-5">
+                        <div>
+                            <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Balansni to'ldirish</p>
+                            <h3 class="text-xl font-bold mt-2">Tezkor to'lov</h3>
                         </div>
-                    <%c++ } else { %>
-                        <%c++ for (auto& trans : transactions) { %>
-                            <div class="trans-item">
-                                <div class="trans-left">
-                                    <div class="trans-icon {% (trans.at("type") == "top-up" ? "icon-topup" : "icon-payment") %}">
-                                        <i class="fas {% (trans.at("type") == "top-up" ? "fa-arrow-down" : "fa-shopping-cart") %}"></i>
+                    </div>
+                    <form action="/wallet/topup" method="POST" class="grid md:grid-cols-3 gap-4 items-end">
+                        <input type="hidden" name="csrf_token" value="<%c++ Wallet_tmp_stream << csrf; %>">
+                        <div class="md:col-span-1">
+                            <label class="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Karta</label>
+                            <select name="card_id" class="field" required>
+                                <%c++ for (auto &card : cards) { %>
+                                    <option value="<%c++ Wallet_tmp_stream << card.at("id"); %>"><%c++ Wallet_tmp_stream << card.at("number"); %></option>
+                                <%c++ } %>
+                            </select>
+                        </div>
+                        <div class="md:col-span-1">
+                            <label class="block text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Summa</label>
+                            <input type="number" name="amount" min="1000" class="field" placeholder="50000" required>
+                        </div>
+                        <div class="md:col-span-1">
+                            <button type="submit" class="btn-main w-full py-3">To'ldirish</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card p-6">
+                    <div class="flex items-center justify-between mb-5">
+                        <div>
+                            <p class="text-[11px] font-black uppercase tracking-[0.22em] text-slate-400">Tarix</p>
+                            <h3 class="text-xl font-bold mt-2">Oxirgi tranzaksiyalar</h3>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <%c++ if (transactions.empty()) { %>
+                            <div class="rounded-2xl border border-dashed border-slate-200 p-6 text-center soft">Hozircha o'tkazmalar mavjud emas</div>
+                        <%c++ } else { %>
+                            <%c++ for (auto &tx : transactions) { %>
+                                <div class="rounded-2xl border border-slate-200 px-4 py-4 flex items-center justify-between gap-4">
+                                    <div>
+                                        <p class="font-bold text-slate-800"><%c++ Wallet_tmp_stream << tx.at("description"); %></p>
+                                        <p class="text-xs soft mt-1"><%c++ Wallet_tmp_stream << tx.at("created_at"); %></p>
                                     </div>
-                                    <div class="trans-info">
-                                        <h4>{% (trans.at("description")) %}</h4>
-                                        <span>{% (trans.at("created_at")) %}</span>
+                                    <div class="text-right">
+                                        <p class="font-black <%c++ Wallet_tmp_stream << (tx.at("type") == "top-up" ? "text-emerald-600" : "text-slate-800"); %>">
+                                            <%c++ Wallet_tmp_stream << (tx.at("type") == "top-up" ? "+" : "-"); %><%c++ Wallet_tmp_stream << tx.at("amount"); %> so'm
+                                        </p>
+                                        <p class="text-xs uppercase tracking-widest soft mt-1"><%c++ Wallet_tmp_stream << tx.at("status"); %></p>
                                     </div>
                                 </div>
-                                <div class="trans-amount {% (trans.at("type") == "top-up" ? "amount-plus" : "amount-minus") %}">
-                                    {% (trans.at("type") == "top-up" ? "+" : "-") %} {% (trans.at("amount")) %} so'm
-                                </div>
-                            </div>
+                            <%c++ } %>
                         <%c++ } %>
-                    <%c++ } %>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Topup Modal -->
-    <div class="modal" id="topupModal">
-        <div class="modal-content">
-            <h2 style="margin-bottom: 25px;">Hisobni to'ldirish</h2>
-            <form action="/wallet/topup" method="POST">
-                <div class="form-group">
-                    <label>Kartani tanlang</label>
-                    <select name="card_id" class="form-control" required>
-                        <%c++ for (auto& card : cards) { %>
-                            <option value="{% (card.at("id")) %}">{% (card.at("number")) %}</option>
-                        <%c++ } %>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Summa (so'mda)</label>
-                    <input type="number" name="amount" class="form-control" placeholder="Masalan: 50000" required min="1000">
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <button type="button" class="btn" style="background: #f1f5f9;" onclick="closeTopup()">Bekor qilish</button>
-                    <button type="submit" class="btn btn-primary">To'ldirish</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        function openTopup() {
-            document.getElementById('topupModal').style.display = 'flex';
-        }
-        function closeTopup() {
-            document.getElementById('topupModal').style.display = 'none';
-        }
-        window.onclick = function(event) {
-            if (event.target == document.getElementById('topupModal')) {
-                closeTopup();
-            }
-        }
-    </script>
 </body>
 </html>

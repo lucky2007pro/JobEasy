@@ -43,7 +43,7 @@
                 <a href="/" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs">
                     <span>🌐</span> Saytga o'tish
                 </a>
-                <a href="/api/logout" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs text-red-500 hover:bg-red-50">
+                <a href="/logout" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs text-red-500 hover:bg-red-50">
                     <span>🚪</span> Chiqish
                 </a>
             </div>
@@ -82,7 +82,7 @@
                         </select>
                     </div>
                     <div class="flex flex-col gap-2">
-                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Narxi ($)</label>
+                        <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Narxi (so'm)</label>
                         <input type="number" step="0.01" name="price" placeholder="999.00" class="text-sm font-bold text-slate-800" required>
                     </div>
                     <div class="flex flex-col gap-2">

@@ -45,7 +45,7 @@
                 <a href="/" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs">
                     <span>🌐</span> Saytga o'tish
                 </a>
-                <a href="/api/logout" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs text-red-500 hover:bg-red-50">
+                <a href="/logout" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs text-red-500 hover:bg-red-50">
                     <span>🚪</span> Chiqish
                 </a>
             </div>
@@ -72,7 +72,7 @@
                 %>
                 <div class="card stat-card p-6 flex flex-col gap-1">
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Jami Tushum</p>
-                    <p class="text-3xl font-black text-amber-700 tracking-tight">$<%c++ AdminAnalytics_tmp_stream << stats["total_revenue"].asString(); %></p>
+                    <p class="text-3xl font-black text-amber-700 tracking-tight"><%c++ AdminAnalytics_tmp_stream << stats["total_revenue"].asString(); %> so'm</p>
                 </div>
                 <div class="card stat-card p-6 flex flex-col gap-1" style="border-left-color: #0d9488;">
                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Jami Buyurtmalar</p>
@@ -116,7 +116,7 @@
                                 <tr class="hover:bg-slate-50/50">
                                     <td class="font-bold text-[11px] text-slate-400">#<%c++ AdminAnalytics_tmp_stream << order.at("id"); %></td>
                                     <td class="font-bold text-slate-800"><%c++ AdminAnalytics_tmp_stream << order.at("full_name"); %></td>
-                                    <td class="font-black text-amber-700">$<%c++ AdminAnalytics_tmp_stream << order.at("total"); %></td>
+                                    <td class="font-black text-amber-700"><%c++ AdminAnalytics_tmp_stream << order.at("total"); %> so'm</td>
                                     <td>
                                         <span class="badge text-[9px] font-black uppercase py-1 px-2 rounded bg-slate-100 text-slate-500">
                                             <%c++ AdminAnalytics_tmp_stream << order.at("status"); %>
@@ -132,6 +132,4 @@
         </div>
     </main>
 </body>
-</html>
-/body>
 </html>

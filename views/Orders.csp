@@ -84,7 +84,7 @@
                         
                         <div class="md:w-32 w-full text-center md:border-l border-slate-50 md:pl-5 shrink-0">
                             <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest opacity-70 mb-1">Summa</p>
-                            <p class="text-xl font-black text-slate-900 tracking-tighter">$<%c++ Orders_tmp_stream << order.at("final_total"); %></p>
+                            <p class="text-xl font-black text-slate-900 tracking-tighter"><%c++ Orders_tmp_stream << order.at("final_total"); %> so'm</p>
                         </div>
                     </div>
                 <%c++ } %>

@@ -1,14 +1,46 @@
+#ifdef _MSC_VER
+#pragma warning(disable : 26819)
+#endif
 #include "AdminController.h"
 #include <vector>
 #include <map>
 #include <iomanip>
+#include <drogon/utils/Utilities.h>
+
+namespace
+{
+std::string ensureCsrfToken(const HttpRequestPtr &req)
+{
+    auto session = req->session();
+    if (!session->find("csrf_token"))
+    {
+        session->insert("csrf_token", drogon::utils::getUuid());
+    }
+    return session->get<std::string>("csrf_token");
+}
+
+bool validateCsrfToken(const HttpRequestPtr &req)
+{
+    auto session = req->session();
+    if (!session->find("csrf_token"))
+    {
+        return false;
+    }
+    const auto token = req->getParameter("csrf_token");
+    if (token.empty())
+    {
+        return false;
+    }
+    return token == session->get<std::string>("csrf_token");
+}
+}
 
 void AdminController::dashboard(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
     auto dbClient = drogon::app().getDbClient("default");
 
     dbClient->execSqlAsync(
         "SELECT id, title, price, stock, image_url FROM products ORDER BY id DESC",
-        [callback](const drogon::orm::Result& r) {
+        [callback, req](const drogon::orm::Result& r) {
             HttpViewData data;
             std::vector<std::map<std::string, std::string>> products_list;
             for (const auto& row : r) {
@@ -23,6 +55,7 @@ void AdminController::dashboard(const HttpRequestPtr& req, std::function<void(co
             data.insert("products_list", std::move(products_list));
             data.insert("is_logged_in", true);
             data.insert("user_name", "Admin");
+            data.insert("csrf_token", ensureCsrfToken(req));
 
             auto resp = HttpResponse::newHttpViewResponse("AdminDashboard", data);
             callback(resp);
@@ -104,7 +137,7 @@ void AdminController::deleteProduct(const HttpRequestPtr& req, std::function<voi
     auto dbClient = drogon::app().getDbClient("default");
     dbClient->execSqlAsync(
         "DELETE FROM products WHERE id = $1",
-        [callback](const drogon::orm::Result& r) {
+        [callback, req](const drogon::orm::Result& r) {
             auto resp = HttpResponse::newRedirectionResponse("/admin/dashboard");
             callback(resp);
         },
@@ -116,6 +149,12 @@ void AdminController::deleteProduct(const HttpRequestPtr& req, std::function<voi
 }
 
 void AdminController::updateStock(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
+    if (!validateCsrfToken(req)) {
+        auto resp = HttpResponse::newHttpResponse();
+        resp->setStatusCode(k403Forbidden);
+        callback(resp);
+        return;
+    }
     auto productId = req->getParameter("product_id");
     auto stockValue = req->getParameter("stock");
 
@@ -127,7 +166,7 @@ void AdminController::updateStock(const HttpRequestPtr& req, std::function<void(
     auto dbClient = app().getDbClient();
     dbClient->execSqlAsync(
         "UPDATE products SET stock = $1 WHERE id = $2",
-        [callback](const drogon::orm::Result& r) {
+        [callback, req](const drogon::orm::Result& r) {
             Json::Value ret;
             ret["status"] = "success";
             callback(HttpResponse::newHttpJsonResponse(ret));
@@ -144,7 +183,7 @@ void AdminController::allOrders(const HttpRequestPtr& req, std::function<void(co
     dbClient->execSqlAsync(
         "SELECT o.id, u.full_name, o.final_total, o.status, o.created_at FROM orders o "
         "JOIN users u ON o.user_id = u.id ORDER BY o.created_at DESC",
-        [callback](const drogon::orm::Result& r) {
+        [callback, req](const drogon::orm::Result& r) {
             HttpViewData data;
             std::vector<std::map<std::string, std::string>> orders;
             for (const auto& row : r) {
@@ -157,6 +196,7 @@ void AdminController::allOrders(const HttpRequestPtr& req, std::function<void(co
                 orders.push_back(order);
             }
             data.insert("orders", orders);
+            data.insert("orders_list", orders);
             data.insert("user_name", "Admin");
             auto resp = HttpResponse::newHttpViewResponse("AdminOrders", data);
             callback(resp);
@@ -171,7 +211,7 @@ void AdminController::categories(const HttpRequestPtr& req, std::function<void(c
     auto dbClient = app().getDbClient();
     dbClient->execSqlAsync(
         "SELECT * FROM categories ORDER BY name ASC",
-        [callback](const drogon::orm::Result& r) {
+        [callback, req](const drogon::orm::Result& r) {
             HttpViewData data;
             std::vector<std::map<std::string, std::string>> categories_list;
             for (const auto& row : r) {
@@ -183,6 +223,7 @@ void AdminController::categories(const HttpRequestPtr& req, std::function<void(c
             }
             data.insert("categories_list", categories_list);
             data.insert("user_name", "Admin");
+            data.insert("csrf_token", ensureCsrfToken(req));
             auto resp = HttpResponse::newHttpViewResponse("AdminCategories", data);
             callback(resp);
         },
@@ -193,6 +234,12 @@ void AdminController::categories(const HttpRequestPtr& req, std::function<void(c
 }
 
 void AdminController::addCategory(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
+    if (!validateCsrfToken(req)) {
+        auto resp = HttpResponse::newHttpResponse();
+        resp->setStatusCode(k403Forbidden);
+        callback(resp);
+        return;
+    }
     auto name = req->getParameter("name");
     auto desc = req->getParameter("description");
     

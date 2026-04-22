@@ -42,6 +42,11 @@ target_sources(${PROJECT_NAME}
 # 6. Kutubxonalarni bog'laymiz
 target_link_libraries(${PROJECT_NAME} PRIVATE Drogon::Drogon)
 
+if(MSVC)
+    # Suppress external header warning promoted as error in Visual Studio.
+    target_compile_options(${PROJECT_NAME} PRIVATE /wd26819)
+endif()
+
 # 7. Include yo'llarini ko'rsatamiz
 target_include_directories(${PROJECT_NAME}
                            PRIVATE 

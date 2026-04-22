@@ -44,7 +44,7 @@
                 <a href="/" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs">
                     <span>🌐</span> Saytga o'tish
                 </a>
-                <a href="/api/logout" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs text-red-500 hover:bg-red-50">
+                <a href="/logout" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs text-red-500 hover:bg-red-50">
                     <span>🚪</span> Chiqish
                 </a>
             </div>
@@ -93,7 +93,7 @@
                                 <div class="text-[10px] text-slate-400 font-medium truncate max-w-xs"><%c++ AdminOrders_tmp_stream << order.at("shipping_address"); %></div>
                             </td>
                             <td class="font-bold text-[11px] text-slate-400">#<%c++ AdminOrders_tmp_stream << order.at("id"); %></td>
-                            <td class="font-black text-amber-700">$<%c++ AdminOrders_tmp_stream << order.at("total_price"); %></td>
+                            <td class="font-black text-amber-700"><%c++ AdminOrders_tmp_stream << order.at("total_price"); %> so'm</td>
                             <td class="text-xs text-slate-500"><%c++ AdminOrders_tmp_stream << order.at("created_at").substr(0, 10); %></td>
                             <td>
                                 <span class="bg-slate-100 text-slate-500 text-[9px] font-black py-1 px-2 rounded uppercase tracking-tighter">

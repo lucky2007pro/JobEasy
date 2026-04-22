@@ -1,12 +1,48 @@
 #include "AuthController.h"
 #include <drogon/utils/Utilities.h> // SHA256 uchun
 
+namespace
+{
+std::string ensureCsrfToken(const HttpRequestPtr &req)
+{
+    auto session = req->session();
+    if (!session->find("csrf_token"))
+    {
+        session->insert("csrf_token", drogon::utils::getUuid());
+    }
+    return session->get<std::string>("csrf_token");
+}
+
+bool validateCsrfToken(const HttpRequestPtr &req)
+{
+    auto session = req->session();
+    if (!session->find("csrf_token"))
+    {
+        return false;
+    }
+    const auto token = req->getParameter("csrf_token");
+    if (token.empty())
+    {
+        return false;
+    }
+    return token == session->get<std::string>("csrf_token");
+}
+}
+
 void AuthController::loginForm(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
-    auto resp = HttpResponse::newHttpViewResponse("Login");
+    HttpViewData data;
+    data.insert("csrf_token", ensureCsrfToken(req));
+    auto resp = HttpResponse::newHttpViewResponse("Login", data);
     callback(resp);
 }
 
 void AuthController::handleLogin(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
+    if (!validateCsrfToken(req)) {
+        auto resp = HttpResponse::newHttpResponse();
+        resp->setStatusCode(k403Forbidden);
+        callback(resp);
+        return;
+    }
     auto params = req->getParameters();
     std::string email = params["email"];
     std::string password = params["password"];
@@ -31,7 +67,9 @@ void AuthController::handleLogin(const HttpRequestPtr& req, std::function<void(c
             }
             else {
                 // Xato ma'lumotlar
-                auto resp = HttpResponse::newHttpViewResponse("Login");
+                HttpViewData data;
+                data.insert("csrf_token", ensureCsrfToken(req));
+                auto resp = HttpResponse::newHttpViewResponse("Login", data);
                 // Bu yerda xatolik xabarini yuborish mumkin
                 callback(resp);
             }
@@ -47,18 +85,26 @@ void AuthController::logout(const HttpRequestPtr& req, std::function<void(const 
     req->session()->erase("user_id");
     req->session()->erase("user_name");
     req->session()->erase("user_role");
-    auto resp = HttpResponse::newRedirectionResponse("/api/login");
+    auto resp = HttpResponse::newRedirectionResponse("/login");
     callback(resp);
 }
 
 // Formani ko'rsatish
 void AuthController::registerForm(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
-    auto resp = HttpResponse::newHttpViewResponse("Register");
+    HttpViewData data;
+    data.insert("csrf_token", ensureCsrfToken(req));
+    auto resp = HttpResponse::newHttpViewResponse("Register", data);
     callback(resp);
 }
 
 // Ma'lumotni bazaga saqlash
 void AuthController::handleRegister(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
+    if (!validateCsrfToken(req)) {
+        auto resp = HttpResponse::newHttpResponse();
+        resp->setStatusCode(k403Forbidden);
+        callback(resp);
+        return;
+    }
     auto params = req->getParameters();
     std::string name = params["full_name"];
     std::string email = params["email"];
@@ -74,7 +120,7 @@ void AuthController::handleRegister(const HttpRequestPtr& req, std::function<voi
         "INSERT INTO users (full_name, email, password_hash, role) VALUES ($1, $2, $3, 'user')",
         [callback](const drogon::orm::Result& r) {
             // Ro'yxatdan o'tgach, to'g'ri login sahifasiga yuboramiz
-            auto resp = HttpResponse::newRedirectionResponse("/api/login");
+            auto resp = HttpResponse::newRedirectionResponse("/login");
             callback(resp);
         },
         [callback](const drogon::orm::DrogonDbException& e) {
@@ -86,4 +132,4 @@ void AuthController::handleRegister(const HttpRequestPtr& req, std::function<voi
         name, email, hashed_pw
     );
 }
-
+

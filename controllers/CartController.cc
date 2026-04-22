@@ -78,7 +78,7 @@ bool validateCsrfToken(const HttpRequestPtr &req)
 
 void CartController::viewCart(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
     if (!req->session()->find("user_id")) {
-        callback(HttpResponse::newRedirectionResponse("/api/login"));
+        callback(HttpResponse::newRedirectionResponse("/login"));
         return;
     }
     auto userId = req->session()->get<int>("user_id");
@@ -141,7 +141,7 @@ void CartController::viewCart(const HttpRequestPtr& req, std::function<void(cons
 
 void CartController::addToCart(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
     if (!req->session()->find("user_id")) {
-        callback(HttpResponse::newRedirectionResponse("/api/login"));
+        callback(HttpResponse::newRedirectionResponse("/login"));
         return;
     }
     if (!validateCsrfToken(req)) {
@@ -184,7 +184,7 @@ void CartController::addToCart(const HttpRequestPtr& req, std::function<void(con
 
 void CartController::removeFromCart(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback, int cartId) {
     if (!req->session()->find("user_id")) {
-        callback(HttpResponse::newRedirectionResponse("/api/login"));
+        callback(HttpResponse::newRedirectionResponse("/login"));
         return;
     }
     if (!validateCsrfToken(req)) {

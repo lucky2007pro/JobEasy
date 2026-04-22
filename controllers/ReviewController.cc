@@ -24,7 +24,7 @@ void ReviewController::addReview(const HttpRequestPtr& req, std::function<void(c
 {
     auto session = req->session();
     if (!session->find("user_id")) {
-        auto resp = HttpResponse::newRedirectionResponse("/api/login");
+        auto resp = HttpResponse::newRedirectionResponse("/login");
         callback(resp);
         return;
     }

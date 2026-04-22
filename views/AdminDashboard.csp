@@ -23,6 +23,7 @@
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
+    <%c++ auto csrf = @@.get<std::string>("csrf_token"); %>
     <aside class="w-64 sidebar flex flex-col z-30 shrink-0">
         <div class="p-6 flex items-center gap-2">
             <div class="w-7 h-7 bg-amber-700 rounded-lg flex items-center justify-center text-white font-black text-xs">C</div>
@@ -46,7 +47,7 @@
                 <a href="/" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs">
                     <span>🌐</span> Saytga o'tish
                 </a>
-                <a href="/api/logout" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs text-red-500 hover:bg-red-50">
+                <a href="/logout" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs text-red-500 hover:bg-red-50">
                     <span>🚪</span> Chiqish
                 </a>
             </div>
@@ -109,7 +110,7 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="font-black text-amber-700">$<%c++ AdminDashboard_tmp_stream << row.at("price"); %></td>
+                            <td class="font-black text-amber-700"><%c++ AdminDashboard_tmp_stream << row.at("price"); %> so'm</td>
                             <td>
                                 <input type="number" value="<%c++ AdminDashboard_tmp_stream << row.at("stock"); %>" 
                                        class="w-16 h-8 text-center text-xs font-black bg-slate-50 border border-slate-200 rounded-lg outline-none focus:border-amber-700 transition"
@@ -138,7 +139,7 @@
                 const res = await fetch('/admin/product/update-stock', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: `product_id=${id}&stock=${val}`
+                    body: `product_id=${id}&stock=${val}&csrf_token=<%c++ AdminDashboard_tmp_stream << csrf; %>`
                 });
                 const data = await res.json();
                 if (data.status !== 'success') alert('Xatolik yuz berdi');
@@ -147,8 +148,5 @@
             }
         }
     </script>
-</body>
-</html>
-  </script>
 </body>
 </html>

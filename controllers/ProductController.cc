@@ -277,8 +277,7 @@ void ProductController::editProductForm(const HttpRequestPtr& request, std::func
                 },
                 [callback](const drogon::orm::DrogonDbException& e) {
                     callback(HttpResponse::newHttpJsonResponse(Json::Value(e.base().what())));
-                },
-                id
+                }
             );
         },
         [callback](const drogon::orm::DrogonDbException& e) {

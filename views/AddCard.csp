@@ -83,6 +83,7 @@
     </style>
 </head>
 <body>
+    <%c++ auto csrf = @@.get<std::string>("csrf_token"); %>
     <div class="card-container">
         <div class="card-preview">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -104,6 +105,7 @@
 
         <div class="form-card">
             <form action="/wallet/add-card" method="POST">
+                <input type="hidden" name="csrf_token" value="<%c++ AddCard_tmp_stream << csrf; %>">
                 <div class="form-group">
                     <label>Karta raqami</label>
                     <input type="text" name="card_number" id="cardInput" class="form-control" maxlength="19" placeholder="8600 0000 0000 0000" required>

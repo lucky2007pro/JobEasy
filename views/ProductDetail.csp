@@ -87,7 +87,7 @@
                     <h1 class="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight leading-tight"><%c++ ProductDetail_tmp_stream << product.at("title"); %></h1>
                     
                     <div class="flex items-center gap-4">
-                        <span class="text-3xl font-black text-slate-900 tracking-tighter">$<%c++ ProductDetail_tmp_stream << product.at("price"); %></span>
+                        <span class="text-3xl font-black text-slate-900 tracking-tighter"><%c++ ProductDetail_tmp_stream << product.at("price"); %> so'm</span>
                         <%c++ 
                             if (product.count("discount_percentage") && !product.at("discount_percentage").empty() && product.at("discount_percentage") != "0") {
                                 try {
@@ -96,7 +96,7 @@
                                     if (discount > 0 && discount < 100) {
                                         double original = price / (1.0 - (discount/100.0));
                         %>
-                            <span class="text-sm text-slate-400 line-through font-bold opacity-50">$<%c++ ProductDetail_tmp_stream << std::fixed << std::setprecision(2) << original; %></span>
+                            <span class="text-sm text-slate-400 line-through font-bold opacity-50"><%c++ ProductDetail_tmp_stream << std::fixed << std::setprecision(2) << original; %> so'm</span>
                         <%c++ 
                                     }
                                 } catch(...) {}
@@ -178,7 +178,7 @@
                     <%c++ } else { %>
                     <div class="card p-8 text-center space-y-3 border-dashed">
                         <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sharh uchun kiring</p>
-                        <a href="/api/login" class="inline-block btn-outline px-6 py-2 text-[9px] uppercase tracking-widest">KIRISH</a>
+                        <a href="/login" class="inline-block btn-outline px-6 py-2 text-[9px] uppercase tracking-widest">KIRISH</a>
                     </div>
                     <%c++ } %>
                 </div>
@@ -221,11 +221,6 @@
 
     <footer class="mt-auto py-8 border-t border-slate-50 text-center">
         <p class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">© 2026 CYBERSHOP GLOBAL</p>
-    </footer>
-</body>
-</html>
-            </div>
-        </div>
     </footer>
 </body>
 </html>
