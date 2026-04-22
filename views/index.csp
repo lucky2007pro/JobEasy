@@ -3,123 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberShop | Bosh Sahifa</title>
+    <title>CyberShop | Sifatli Elektronika</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style> 
-        :root { --bg: #0f172a; --text: #f8fafc; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
-        .light { --bg: #f8fafc; --text: #0f172a; --glass: rgba(0, 0, 0, 0.05); --border: rgba(0, 0, 0, 0.1); }
-        body { font-family: 'Outfit', sans-serif; background-color: var(--bg); color: var(--text); transition: background-color 0.3s, color 0.3s; }
-        .glass { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); }
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .glass-header { background: rgba(255, 255, 255, 0.82); backdrop-filter: blur(16px); border-bottom: 1px solid #e2e8f0; }
+        .category-pill { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px; padding: 5px 12px; font-size: 10px; font-weight: 700; color: #64748b; transition: all 0.2s; text-transform: uppercase; letter-spacing: 0.02em; }
+        .category-pill:hover, .category-pill.active { background: #b45309; border-color: #b45309; color: #fff; }
+        .product-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .product-card:hover { border-color: #b45309; transform: translateY(-2px); box-shadow: 0 8px 20px -8px rgba(180, 83, 9, 0.12); }
+        .btn-amber { background: #b45309; color: white; border-radius: 6px; font-weight: 700; transition: all 0.2s; }
+        .btn-amber:hover { background: #92400e; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
-    <script>
-        if (localStorage.theme === 'light' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: light)').matches)) {
-            document.documentElement.classList.add('light')
-        } else {
-            document.documentElement.classList.remove('light')
-        }
-        function toggleTheme() {
-            if (document.documentElement.classList.contains('light')) {
-                document.documentElement.classList.remove('light');
-                localStorage.theme = 'dark';
-            } else {
-                document.documentElement.classList.add('light');
-                localStorage.theme = 'light';
-            }
-        }
-    </script>
 </head>
 <body class="min-h-screen flex flex-col">
     <%c++
         using ProductItem = std::map<std::string, std::string>;
         auto &products = @@.get<std::vector<ProductItem>>("products");
+        auto &categories = @@.get<std::vector<std::map<std::string, std::string>>>("categories");
         auto &name = @@.get<std::string>("user_name");
         auto is_logged_in = @@.get<bool>("is_logged_in");
+        auto current_page = @@.get<int>("current_page");
     %>
     
-    <nav class="glass sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-            <a href="/" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-500 tracking-tighter">CyberShop</a>
-            <div class="flex items-center space-x-6">
-                <button onclick="toggleTheme()" class="w-10 h-10 glass rounded-xl flex items-center justify-center hover:scale-110 transition">🌓</button>
-                <a href="/" class="text-slate-300 hover:text-cyan-400 font-semibold transition">Bosh sahifa</a>
-                <a href="/wishlist" class="text-slate-300 hover:text-cyan-400 font-semibold transition">Sevimlilar ❤️</a>
-                <a href="/cart" class="text-slate-300 hover:text-cyan-400 font-semibold transition">Savatcha 🛒</a>
+    <header class="glass-header sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-3 flex items-center justify-between gap-6">
+            <a href="/" class="flex items-center gap-2 flex-shrink-0">
+                <div class="w-7 h-7 bg-amber-700 rounded-lg flex items-center justify-center text-white font-black text-xs">C</div>
+                <span class="text-lg font-bold text-slate-800 tracking-tight">CyberShop</span>
+            </a>
+
+            <form action="/search" method="GET" class="flex-grow max-w-lg hidden md:block">
+                <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-lg overflow-hidden focus-within:border-amber-500 focus-within:bg-white transition-all">
+                    <input type="text" name="q" placeholder="Qidiruv..." 
+                           class="w-full bg-transparent px-4 py-2 text-[11px] font-medium outline-none text-slate-600">
+                    <button type="submit" class="pr-4 text-slate-400 hover:text-amber-700 transition">🔍</button>
+                </div>
+            </form>
+
+            <div class="flex items-center gap-5 flex-shrink-0">
+                <a href="/wishlist" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">SEVIMLI</a>
+                <a href="/cart" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">SAVAT</a>
+                <a href="/wallet" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">HAMYON</a>
                 <%c++ if (is_logged_in) { %>
-                    <a href="/orders" class="text-slate-300 hover:text-fuchsia-400 font-semibold transition">Buyurtmalar</a>
-                    <div class="glass px-4 py-1.5 rounded-full text-sm">
-                        <span>Salom, <b class="text-cyan-400"><%c++ index_tmp_stream << name; %></b></span>
-                    </div>
-                    <a href="/api/logout" class="bg-red-500/20 hover:bg-red-500/40 text-red-100 px-4 py-2 rounded-xl text-sm font-bold transition">Chiqish</a>
+                    <a href="/profile" class="flex items-center gap-2 group">
+                        <div class="text-right hidden sm:block">
+                            <p class="text-[9px] font-black text-slate-400 uppercase leading-none mb-0.5">Mening</p>
+                            <p class="text-[10px] font-bold text-slate-800 group-hover:text-amber-700 transition leading-none">Profilim</p>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-700"><%c++ index_tmp_stream << name.substr(0,1); %></div>
+                    </a>
                 <%c++ } else { %>
-                    <a href="/api/login" class="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-6 py-2 rounded-xl font-bold hover:shadow-[0_0_15px_rgba(34,211,238,0.5)] transition">Kirish</a>
+                    <a href="/api/login" class="btn-amber px-4 py-1.5 text-[10px] uppercase tracking-widest">KIRISH</a>
                 <%c++ } %>
             </div>
         </div>
-    </nav>
 
-    <main class="flex-grow max-w-7xl mx-auto py-12 px-6 w-full space-y-16">
-        <section class="glass rounded-[3rem] p-12 text-center relative overflow-hidden shadow-2xl shadow-cyan-900/20 text-white">
-            <div class="absolute inset-0 bg-gradient-to-br from-fuchsia-600/20 via-transparent to-cyan-600/20"></div>
-            <h1 class="text-5xl md:text-7xl font-black mb-6 relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-white to-fuchsia-300">Kelajak Texnologiyalari</h1>
-            <p class="text-lg md:text-xl text-slate-300 mb-8 relative z-10 max-w-2xl mx-auto">Eng so'nggi gadjetlar va elektronika mahsulotlarini bizning premium platformamizdan xarid qiling.</p>
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-2 pb-3 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-slate-50">
+            <a href="/" class="category-pill <%= current_page == 1 ? "active" : "" %>">HAMMASI</a>
+            <%c++ for(auto &cat : categories) { %>
+                <a href="/search?category_id=<%c++ index_tmp_stream << cat.at("id"); %>" class="category-pill">
+                    <%c++ index_tmp_stream << cat.at("name"); %>
+                </a>
+            <%c++ } %>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 md:px-8 py-8 w-full space-y-12">
+        <section class="h-48 rounded-2xl bg-slate-900 flex items-center relative overflow-hidden px-10">
+            <div class="relative z-10 space-y-3">
+                <p class="text-[10px] font-black text-amber-500 uppercase tracking-widest">Premium Sifat</p>
+                <h1 class="text-3xl font-bold text-white tracking-tight max-w-sm">Kelajak texnologiyasi bugun bizda</h1>
+                <a href="/search?q=sale" class="inline-block bg-white text-slate-900 px-5 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-amber-500 hover:text-white transition">Xaridni boshlash</a>
+            </div>
+            <div class="absolute right-0 top-0 h-full w-2/3 bg-gradient-to-l from-amber-700/20 to-transparent"></div>
         </section>
 
-        <section>
-            <div class="flex justify-between items-end mb-10 border-b border-slate-800 pb-4">
-                <h2 class="text-3xl font-bold flex items-center">
-                    <span class="w-3 h-10 bg-cyan-400 rounded-full mr-4 shadow-[0_0_10px_rgba(34,211,238,0.6)]"></span>
-                    🔥 Top Mahsulotlar
+        <section class="space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-1 h-3 bg-amber-600 rounded-full"></span>
+                    MAHSULOTLAR
                 </h2>
-                <div class="flex gap-4">
-                    <select id="sortSelect" onchange="window.location.href='/?sort=' + this.value" class="bg-slate-800 text-slate-300 px-4 py-2 rounded-xl border border-slate-700 outline-none focus:border-cyan-500">
-                        <option value="newest">Yangi mahsulotlar</option>
-                        <option value="price_asc">Narxi (Arzon-Qimmat)</option>
-                        <option value="price_desc">Narxi (Qimmat-Arzon)</option>
-                        <option value="oldest">Eski mahsulotlar</option>
-                    </select>
-                    <script>
-                        const urlParams = new URLSearchParams(window.location.search);
-                        const sort = urlParams.get('sort');
-                        if (sort) document.getElementById('sortSelect').value = sort;
-                    </script>
-                </div>
+                <select id="sortSelect" onchange="window.location.href='/?sort=' + this.value" 
+                        class="text-[10px] font-black text-slate-400 bg-transparent outline-none uppercase tracking-widest cursor-pointer hover:text-amber-700 transition">
+                    <option value="newest">YANGI</option>
+                    <option value="price_asc">ARZON</option>
+                    <option value="price_desc">QIMMAT</option>
+                </select>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
                 <%c++ for(auto &p : products) { %>
-                    <div class="glass rounded-3xl overflow-hidden group hover:-translate-y-2 hover:shadow-[0_0_25px_rgba(192,38,211,0.2)] transition-all duration-300 flex flex-col">
-                        <div class="h-56 bg-slate-800 flex items-center justify-center p-4 relative overflow-hidden">
+                    <div class="product-card flex flex-col group p-2 relative">
+                        <a href="/product/<%c++ index_tmp_stream << p.at("id"); %>" class="h-36 bg-slate-50 border border-slate-100 rounded-lg mb-2 flex items-center justify-center p-4 relative overflow-hidden">
                             <%c++ if (!p.at("image_url").empty()) { %>
-                                <img src="<%c++ index_tmp_stream << p.at("image_url"); %>" alt="Product" class="max-h-full object-contain group-hover:scale-110 transition duration-500">
+                                <img src="<%c++ index_tmp_stream << p.at("image_url"); %>" alt="Product" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-110">
                             <%c++ } else { %>
-                                <div class="text-slate-600 text-6xl">📦</div>
+                                <div class="text-slate-200 text-3xl">📦</div>
                             <%c++ } %>
+                        </a>
+                        
+                        <div class="px-1 flex-grow flex flex-col gap-1">
+                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-tighter leading-none">Smart Device</p>
+                            <h3 class="text-[11px] font-bold text-slate-800 line-clamp-2 leading-tight group-hover:text-amber-700 transition">
+                                <a href="/product/<%c++ index_tmp_stream << p.at("id"); %>"><%c++ index_tmp_stream << p.at("title"); %></a>
+                            </h3>
+                            <p class="text-[13px] font-black text-slate-900 tracking-tight mt-1">$<%c++ index_tmp_stream << p.at("price"); %></p>
                         </div>
-                        <div class="p-6 flex flex-col flex-grow">
-                            <h3 class="text-xl font-bold mb-2 group-hover:text-cyan-400 transition truncate"><a href="/product/<%c++ index_tmp_stream << p.at("id"); %>"><%c++ index_tmp_stream << p.at("title"); %></a></h3>
-                            <p class="text-fuchsia-400 font-black text-2xl mb-4">$<%c++ index_tmp_stream << p.at("price"); %></p>
-                            
-                            <div class="flex gap-2 mt-auto">
-                                <form action="/cart/add" method="POST" class="flex-grow">
-                                    <input type="hidden" name="product_id" value="<%c++ index_tmp_stream << p.at("id"); %>">
-                                    <button class="w-full py-3 rounded-xl bg-slate-800 hover:bg-cyan-500 text-slate-300 hover:text-slate-900 font-bold transition-all flex items-center justify-center gap-2">
-                                        <span>+ 🛒</span>
-                                    </button>
-                                </form>
-                                <a href="/wishlist/add/<%c++ index_tmp_stream << p.at("id"); %>" class="px-4 py-3 rounded-xl bg-slate-800 hover:bg-fuchsia-500 text-fuchsia-400 hover:text-white transition-all flex items-center justify-center">
-                                    ❤️
-                                </a>
-                            </div>
+                        
+                        <div class="mt-3 flex gap-1">
+                            <form action="/cart/add" method="POST" class="flex-grow">
+                                <input type="hidden" name="csrf_token" value="<%c++ index_tmp_stream << @@.get<std::string>("csrf_token"); %>">
+                                <input type="hidden" name="product_id" value="<%c++ index_tmp_stream << p.at("id"); %>">
+                                <button class="w-full btn-amber py-2 text-[9px] font-black uppercase tracking-widest">SAVATGA</button>
+                            </form>
+                            <form action="/wishlist/add/<%c++ index_tmp_stream << p.at("id"); %>" method="POST" class="relative z-10">
+                                <input type="hidden" name="csrf_token" value="<%c++ index_tmp_stream << @@.get<std::string>("csrf_token"); %>">
+                                <button type="submit" class="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                                </button>
+                            </form>
                         </div>
                     </div>
+                <%c++ } %>
+            </div>
+
+            <div class="mt-16 flex justify-center gap-1">
+                <%c++ if (current_page > 1) { %>
+                    <a href="?page=<%c++ index_tmp_stream << (current_page - 1); %>" class="px-4 py-2 bg-white border border-slate-200 rounded text-[10px] font-black uppercase tracking-widest hover:bg-amber-50 transition">←</a>
+                <%c++ } %>
+                <span class="px-4 py-2 bg-amber-700 text-white rounded text-[10px] font-black"><%c++ index_tmp_stream << current_page; %></span>
+                <%c++ if (products.size() == 12) { %>
+                    <a href="?page=<%c++ index_tmp_stream << (current_page + 1); %>" class="px-4 py-2 bg-white border border-slate-200 rounded text-[10px] font-black uppercase tracking-widest hover:bg-amber-50 transition">→</a>
                 <%c++ } %>
             </div>
         </section>
     </main>
 
-    <footer class="border-t border-slate-800 text-center py-8 text-slate-500 text-sm mt-auto">
-        &copy; 2026 CyberShop | Powered by Drogon C++
+    <footer class="mt-auto bg-white border-t border-slate-100 py-12 px-4 md:px-8 flex flex-col gap-8">
+        <div class="max-w-7xl mx-auto w-full grid grid-cols-2 md:grid-cols-4 gap-10">
+            <div class="col-span-2 md:col-span-1 space-y-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 bg-amber-700 rounded-lg flex items-center justify-center text-white font-black text-[10px]">C</div>
+                    <span class="text-base font-bold tracking-tight">CyberShop</span>
+                </div>
+                <p class="text-[11px] font-medium text-slate-400 leading-relaxed">Elektronika olamida sizning ishonchli hamrohingiz. Sifat va kafolat bizning ustuvorligimiz.</p>
+            </div>
+            <div class="space-y-4">
+                <h4 class="text-[10px] font-black text-slate-800 uppercase tracking-widest">Sahifalar</h4>
+                <ul class="text-[11px] font-bold text-slate-400 space-y-2 uppercase tracking-tighter">
+                    <li><a href="#" class="hover:text-amber-700 transition">Biz haqimizda</a></li>
+                    <li><a href="#" class="hover:text-amber-700 transition">Yetkazib berish</a></li>
+                    <li><a href="#" class="hover:text-amber-700 transition">To'lovlar</a></li>
+                </ul>
+            </div>
+            <div class="space-y-4">
+                <h4 class="text-[10px] font-black text-slate-800 uppercase tracking-widest">Kabinet</h4>
+                <ul class="text-[11px] font-bold text-slate-400 space-y-2 uppercase tracking-tighter">
+                    <li><a href="/profile" class="hover:text-amber-700 transition">Profil</a></li>
+                    <li><a href="/cart" class="hover:text-amber-700 transition">Savat</a></li>
+                    <li><a href="/wishlist" class="hover:text-amber-700 transition">Sevimlilar</a></li>
+                </ul>
+            </div>
+            <div class="space-y-4">
+                <h4 class="text-[10px] font-black text-slate-800 uppercase tracking-widest">Aloqa</h4>
+                <p class="text-[11px] font-bold text-slate-800 tracking-tight">+998 71 203 66 60</p>
+                <p class="text-[11px] font-medium text-slate-400">Toshkent, Yunusobod</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto w-full pt-8 border-t border-slate-50 flex justify-between items-center text-[9px] font-black text-slate-400 uppercase tracking-widest">
+            <span>© 2026 CYBERSHOP</span>
+            <span>POWERED BY DROGON C++</span>
+        </div>
     </footer>
 </body>
 </html>

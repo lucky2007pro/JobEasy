@@ -1,7 +1,36 @@
 #include "CartController.h"
 #include <drogon/HttpViewData.h>
+#include <drogon/utils/Utilities.h>
 #include <vector>
 #include <map>
+
+namespace
+{
+std::string ensureCsrfToken(const HttpRequestPtr &req)
+{
+    auto session = req->session();
+    if (!session->find("csrf_token"))
+    {
+        session->insert("csrf_token", drogon::utils::getUuid());
+    }
+    return session->get<std::string>("csrf_token");
+}
+
+bool validateCsrfToken(const HttpRequestPtr &req)
+{
+    auto session = req->session();
+    if (!session->find("csrf_token"))
+    {
+        return false;
+    }
+    auto token = req->getParameter("csrf_token");
+    if (token.empty())
+    {
+        return false;
+    }
+    return token == session->get<std::string>("csrf_token");
+}
+}  // namespace
 
 void CartController::viewCart(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
     if (!req->session()->find("user_id")) {
@@ -12,13 +41,18 @@ void CartController::viewCart(const HttpRequestPtr& req, std::function<void(cons
     auto userName = req->session()->get<std::string>("user_name");
     
     auto dbClient = drogon::app().getDbClient("default");
+    const auto csrfToken = ensureCsrfToken(req);
+
     dbClient->execSqlAsync(
-        "SELECT c.id as cart_id, p.id as product_id, p.title, p.price, p.image_url, c.quantity "
+        "SELECT c.id as cart_id, p.id as product_id, p.title, p.price, pi.image_url, c.quantity "
         "FROM cart_items c JOIN products p ON c.product_id = p.id "
+        "LEFT JOIN product_images pi ON (p.id = pi.product_id AND pi.is_primary = TRUE) "
         "WHERE c.user_id = $1",
-        [callback, userName](const drogon::orm::Result& r) {
+        [callback, userName, csrfToken](const drogon::orm::Result& r) {
             HttpViewData data;
             data.insert("user_name", userName);
+            data.insert("is_logged_in", true);
+            data.insert("csrf_token", csrfToken);
             
             std::vector<std::map<std::string, std::string>> items;
             double total = 0.0;
@@ -58,6 +92,12 @@ void CartController::addToCart(const HttpRequestPtr& req, std::function<void(con
         callback(HttpResponse::newRedirectionResponse("/api/login"));
         return;
     }
+    if (!validateCsrfToken(req)) {
+        auto resp = HttpResponse::newHttpResponse();
+        resp->setStatusCode(k403Forbidden);
+        callback(resp);
+        return;
+    }
     auto userId = req->session()->get<int>("user_id");
     auto params = req->getParameters();
     int productId = std::stoi(params["product_id"]);
@@ -85,6 +125,12 @@ void CartController::addToCart(const HttpRequestPtr& req, std::function<void(con
 void CartController::removeFromCart(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback, int cartId) {
     if (!req->session()->find("user_id")) {
         callback(HttpResponse::newRedirectionResponse("/api/login"));
+        return;
+    }
+    if (!validateCsrfToken(req)) {
+        auto resp = HttpResponse::newHttpResponse();
+        resp->setStatusCode(k403Forbidden);
+        callback(resp);
         return;
     }
     auto userId = req->session()->get<int>("user_id");

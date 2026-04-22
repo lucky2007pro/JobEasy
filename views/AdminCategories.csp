@@ -1,0 +1,118 @@
+<%inc 
+    #include <json/json.h> 
+%>
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShop Admin | Kategoriyalar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style> 
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .sidebar { background: #ffffff; border-right: 1px solid #e2e8f0; }
+        .sidebar-link { color: #64748b; transition: all 0.2s; border-radius: 8px; }
+        .sidebar-link:hover { background: #f8fafc; color: #b45309; }
+        .sidebar-link.active { background: #fef3c7; color: #b45309; font-weight: 700; }
+        .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; }
+        .btn-amber { background: #b45309; color: white; border-radius: 8px; transition: all 0.2s; }
+        .btn-amber:hover { background: #92400e; }
+        table th { background: #f8fafc; color: #64748b; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; padding: 12px 24px; border-bottom: 1px solid #e2e8f0; }
+        table td { padding: 14px 24px; border-bottom: 1px solid #f1f5f9; font-size: 13px; }
+        input { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; outline: none; transition: all 0.2s; }
+        input:focus { border-color: #b45309; background: white; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+    <aside class="w-64 sidebar flex flex-col z-30 shrink-0">
+        <div class="p-6 flex items-center gap-2">
+            <div class="w-7 h-7 bg-amber-700 rounded-lg flex items-center justify-center text-white font-black text-xs">C</div>
+            <h2 class="text-base font-bold text-slate-800 tracking-tight">CyberShop Admin</h2>
+        </div>
+        <nav class="flex-grow px-4 space-y-1 mt-4">
+            <a href="/admin/dashboard" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs">
+                <span>📦</span> Mahsulotlar
+            </a>
+            <a href="/admin/analytics" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs">
+                <span>📊</span> Analitika
+            </a>
+            <a href="/admin/orders" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs">
+                <span>🚚</span> Buyurtmalar
+            </a>
+            <a href="/admin/categories" class="sidebar-link active flex items-center gap-3 py-2.5 px-4 text-xs">
+                <span>📁</span> Kategoriyalar
+            </a>
+            <div class="pt-6 mt-6 border-t border-slate-50">
+                <p class="text-[9px] text-slate-400 font-black uppercase tracking-widest mb-3 px-4">Tizim</p>
+                <a href="/" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs">
+                    <span>🌐</span> Saytga o'tish
+                </a>
+                <a href="/api/logout" class="sidebar-link flex items-center gap-3 py-2.5 px-4 text-xs text-red-500 hover:bg-red-50">
+                    <span>🚪</span> Chiqish
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto flex flex-col">
+        <header class="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-20">
+            <div class="flex items-center gap-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                <span>Boshqaruv</span> <span class="text-slate-200">/</span> <span class="text-slate-800">Kategoriyalar</span>
+            </div>
+        </header>
+
+        <div class="p-8 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <div class="lg:col-span-1 space-y-6">
+                <div class="space-y-1">
+                    <h2 class="text-xl font-bold text-slate-800 tracking-tight">Yangi Kategoriya</h2>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ierarxiyani kengaytirish</p>
+                </div>
+                <div class="card p-8">
+                    <form action="/admin/category/add" method="POST" class="space-y-4">
+                        <div class="flex flex-col gap-2">
+                            <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Kategoriya nomi</label>
+                            <input type="text" name="name" placeholder="Masalan: Monitorlar" class="bg-slate-50 text-sm font-bold text-slate-800" required>
+                        </div>
+                        <button type="submit" class="w-full btn-amber py-3 text-[11px] font-black uppercase tracking-widest">Qo'shish</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="lg:col-span-2 space-y-6">
+                <div class="space-y-1">
+                    <h2 class="text-xl font-bold text-slate-800 tracking-tight">Mavjud Kategoriyalar</h2>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tizimdagi barcha bo'limlar</p>
+                </div>
+                <div class="card overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr>
+                                <th>Kategoriya ID</th>
+                                <th>Nomi</th>
+                                <th class="text-right">Amallar</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-50">
+                            <%c++ 
+                                auto &categories = @@.get<std::vector<std::map<std::string, std::string>>>("categories_list");
+                                for(auto &cat : categories) {
+                            %>
+                            <tr class="hover:bg-slate-50/50">
+                                <td class="font-bold text-[11px] text-slate-400">#<%c++ AdminCategories_tmp_stream << cat.at("id"); %></td>
+                                <td class="font-bold text-slate-800"><%c++ AdminCategories_tmp_stream << cat.at("name"); %></td>
+                                <td class="text-right">
+                                    <a href="/admin/category/delete/<%c++ AdminCategories_tmp_stream << cat.at("id"); %>" 
+                                       class="p-2 hover:bg-red-50 rounded text-red-300 hover:text-red-500 transition inline-block"
+                                       onclick="return confirm('O\'chirmoqchimisiz?')">🗑️</a>
+                                </td>
+                            </tr>
+                            <%c++ } %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

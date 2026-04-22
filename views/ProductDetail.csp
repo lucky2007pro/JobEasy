@@ -3,135 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberShop | Mahsulot tafsiloti</title>
+    <title>CyberShop | Mahsulot Tafsiloti</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style> 
-        :root { --bg: #0f172a; --text: #f8fafc; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
-        .light { --bg: #f8fafc; --text: #0f172a; --glass: rgba(0, 0, 0, 0.05); --border: rgba(0, 0, 0, 0.1); }
-        body { font-family: 'Outfit', sans-serif; background-color: var(--bg); color: var(--text); transition: background-color 0.3s, color 0.3s; }
-        .glass { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); }
+        body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .glass-header { background: rgba(255, 255, 255, 0.82); backdrop-filter: blur(16px); border-bottom: 1px solid #e2e8f0; }
+        .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; }
+        .btn-amber { background: #b45309; color: white; border-radius: 7px; font-weight: 700; transition: all 0.2s; }
+        .btn-amber:hover { background: #92400e; }
+        .btn-outline { background: #ffffff; border: 1px solid #e2e8f0; color: #64748b; border-radius: 7px; font-weight: 700; transition: all 0.2s; }
+        .btn-outline:hover { background: #f8fafc; border-color: #b45309; color: #b45309; }
+        .review-card { background: #ffffff; border: 1px solid #f1f5f9; border-radius: 10px; }
     </style>
-    <script>
-        if (localStorage.theme === 'light' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: light)').matches)) {
-            document.documentElement.classList.add('light')
-        } else {
-            document.documentElement.classList.remove('light')
-        }
-        function toggleTheme() {
-            if (document.documentElement.classList.contains('light')) {
-                document.documentElement.classList.remove('light');
-                localStorage.theme = 'dark';
-            } else {
-                document.documentElement.classList.add('light');
-                localStorage.theme = 'light';
-            }
-        }
-    </script>
 </head>
 <body class="min-h-screen flex flex-col">
     <%c++
         using ProductItem = std::map<std::string, std::string>;
         auto &product = @@.get<ProductItem>("product");
         auto is_logged_in = @@.get<bool>("is_logged_in");
+        auto &name = @@.get<std::string>("user_name");
+        auto &reviews = @@.get<std::vector<ProductItem>>("reviews");
     %>
     
-    <nav class="glass sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
-            <a href="/" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-500 tracking-tighter">CyberShop</a>
-            <div class="flex items-center space-x-6">
-                <button onclick="toggleTheme()" class="w-10 h-10 glass rounded-xl flex items-center justify-center hover:scale-110 transition">🌓</button>
-                <a href="/" class="text-slate-300 hover:text-cyan-400 font-semibold transition">Bosh sahifa</a>
-                <a href="/wishlist" class="text-slate-300 hover:text-cyan-400 font-semibold transition">Sevimlilar ❤️</a>
-                <a href="/cart" class="text-slate-300 hover:text-cyan-400 font-semibold transition">Savatcha 🛒</a>
+    <header class="glass-header sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 md:px-8 py-3 flex items-center justify-between">
+            <a href="/" class="flex items-center gap-2">
+                <div class="w-6 h-6 bg-amber-700 rounded-lg flex items-center justify-center text-white font-black text-[10px]">C</div>
+                <span class="text-base font-bold text-slate-800 tracking-tight">CyberShop</span>
+            </a>
+            <div class="flex items-center gap-5">
+                <a href="/" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">DO'KON</a>
+                <a href="/wishlist" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">SEVIMLI</a>
+                <a href="/cart" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">SAVAT</a>
+                <div class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-[9px] font-black text-slate-600 border border-slate-200">
+                    <%c++ ProductDetail_tmp_stream << (name.empty() ? "?" : name.substr(0,1)); %>
+                </div>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <main class="flex-grow max-w-7xl mx-auto py-16 px-6 w-full">
-        <div class="glass rounded-[3rem] p-8 md:p-12 shadow-2xl flex flex-col md:flex-row gap-12">
-            <div class="md:w-1/2 bg-slate-900 rounded-3xl p-8 flex items-center justify-center min-h-[400px] border border-slate-700 hover:border-cyan-500/50 transition">
-                <%c++ if (!product.at("image_url").empty()) { %>
-                    <img src="<%c++ ProductDetail_tmp_stream << product.at("image_url"); %>" alt="Product" class="max-h-full object-contain">
-                <%c++ } else { %>
-                    <div class="text-slate-600 text-8xl">📦</div>
+    <main class="flex-grow max-w-7xl mx-auto px-4 md:px-8 py-10 w-full space-y-12">
+        <div class="card p-6 md:p-10 flex flex-col md:flex-row gap-10">
+            <div class="md:w-1/2 flex flex-col gap-6">
+                <div class="bg-slate-50 rounded-2xl flex items-center justify-center p-8 border border-slate-100 relative min-h-[360px] overflow-hidden group">
+                    <%c++
+                        auto &product_images = @@.get<std::vector<std::map<std::string, std::string>>>("product_images");
+                        if (!product_images.empty()) {
+                    %>
+                        <img id="mainImage" src="<%c++ ProductDetail_tmp_stream << product_images[0].at("image_url"); %>" class="max-h-[320px] object-contain drop-shadow-2xl transition-all duration-500">
+                    <%c++ } else { %>
+                        <div class="text-slate-200 text-6xl">📦</div>
+                    <%c++ } %>
+
+                    <%c++ if (product.count("discount_percentage") && product.at("discount_percentage") != "0") { %>
+                        <div class="absolute top-6 left-6 bg-amber-700 text-white text-[9px] font-black px-3 py-1.5 rounded uppercase tracking-widest">
+                            -<%c++ ProductDetail_tmp_stream << product.at("discount_percentage"); %>% CHEGIRMA
+                        </div>
+                    <%c++ } %>
+                </div>
+
+                <%c++ if (product_images.size() > 1) { %>
+                <div class="grid grid-cols-4 gap-4">
+                    <%c++ for(auto &img : product_images) { %>
+                        <div class="aspect-square bg-white border border-slate-100 rounded-xl overflow-hidden cursor-pointer hover:border-amber-500 transition-all p-2"
+                             onclick="document.getElementById('mainImage').src='<%c++ ProductDetail_tmp_stream << img.at("image_url"); %>'">
+                            <img src="<%c++ ProductDetail_tmp_stream << img.at("image_url"); %>" class="w-full h-full object-contain">
+                        </div>
+                    <%c++ } %>
+                </div>
                 <%c++ } %>
             </div>
-            
-            <div class="md:w-1/2 flex flex-col justify-center">
-                <div class="mb-4 inline-block px-3 py-1 glass rounded-full text-xs text-cyan-400 font-bold uppercase tracking-widest border border-cyan-400/30">
-                    Omborda: <%c++ ProductDetail_tmp_stream << product.at("stock"); %> ta
-                </div>
-                <h1 class="text-4xl md:text-5xl font-black mb-6"><%c++ ProductDetail_tmp_stream << product.at("title"); %></h1>
-                <p class="text-fuchsia-400 font-black text-4xl mb-8">$<%c++ ProductDetail_tmp_stream << product.at("price"); %></p>
-                <div class="prose prose-invert max-w-none text-slate-300 mb-10 leading-relaxed font-light">
-                    <%c++ ProductDetail_tmp_stream << product.at("description"); %>
-                </div>
-                
-                <form action="/cart/add" method="POST" class="mt-auto flex gap-4">
-                    <input type="hidden" name="product_id" value="<%c++ ProductDetail_tmp_stream << product.at("id"); %>">
-                    <input type="number" name="quantity" value="1" min="1" max="<%c++ ProductDetail_tmp_stream << product.at("stock"); %>" 
-                        class="w-24 bg-slate-800 border border-slate-600 rounded-xl px-4 text-xl font-bold text-center focus:outline-none focus:border-cyan-400">
-                    <button class="flex-grow bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-4 rounded-xl font-black text-lg hover:shadow-[0_0_20px_rgba(34,211,238,0.6)] transition-all transform hover:-translate-y-1 border border-cyan-400/50">
-                        Savatchaga qo'shish
-                    </button>
-                    <a href="/wishlist/add/<%c++ ProductDetail_tmp_stream << product.at("id"); %>" class="w-16 h-16 glass rounded-xl flex items-center justify-center text-2xl text-fuchsia-400 hover:bg-fuchsia-500 hover:text-white transition shadow-lg border border-fuchsia-400/30">
-                        ❤️
-                    </a>
-                </form>
-            </div>
-        </div>
-        </div>
-        
-        <!-- Reviews Section -->
-        <div class="mt-12 glass rounded-[3rem] p-8 md:p-12 shadow-2xl border border-slate-700/50">
-            <h2 class="text-3xl font-bold mb-8">Izohlar va Baholar</h2>
-            
-            <%c++ if (is_logged_in) { %>
-            <div class="mb-10 bg-slate-900/50 p-6 rounded-2xl border border-slate-800">
-                <form action="/api/review" method="POST" class="space-y-4">
-                    <input type="hidden" name="product_id" value="<%c++ ProductDetail_tmp_stream << product.at("id"); %>">
-                    <div>
-                        <label class="block text-sm font-bold text-slate-400 uppercase mb-2">Baholang (1 dan 5 gacha)</label>
-                        <select name="rating" class="p-3 bg-slate-800 focus:outline-none border border-slate-600 rounded-xl text-white">
-                            <option value="5">⭐⭐⭐⭐⭐ Juda zo'r!</option>
-                            <option value="4">⭐⭐⭐⭐ Yaxshi</option>
-                            <option value="3">⭐⭐⭐ O'rtacha</option>
-                            <option value="2">⭐⭐ Menga yoqmadi</option>
-                            <option value="1">⭐ Rostdan ham yomon</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-slate-400 uppercase mb-2">Fikringiz</label>
-                        <textarea name="comment" rows="3" class="w-full p-4 bg-slate-800 border border-slate-600 rounded-xl text-white outline-none focus:border-cyan-500" placeholder="Mahsulot haqida nima deysiz?"></textarea>
-                    </div>
-                    <button class="bg-cyan-500 text-slate-900 px-6 py-3 rounded-xl font-bold hover:bg-cyan-400 transition">Izohni yuborish</button>
-                </form>
-            </div>
-            <%c++ } else { %>
-            <div class="mb-10 p-6 bg-slate-800/30 rounded-2xl border border-slate-800 text-center">
-                <p class="text-slate-400">Izoh qoldirish uchun tizimga kiring.</p>
-                <a href="/api/login" class="text-cyan-400 font-bold hover:underline mt-2 inline-block">Tizimga kirish</a>
-            </div>
-            <%c++ } %>
 
-            <div class="space-y-6">
-                <!-- Static UI mockup for reviews -->
-                <div class="p-6 bg-slate-900/30 rounded-2xl border border-slate-800">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 bg-gradient-to-br from-cyan-400 to-fuchsia-500 rounded-full flex items-center justify-center text-white font-bold">U</div>
-                            <div>
-                                <h4 class="font-bold text-slate-200">Foydalanuvchi</h4>
-                                <span class="text-xs text-slate-500">Biroz oldin</span>
-                            </div>
-                        </div>
-                        <div class="text-yellow-400 tracking-widest">⭐⭐⭐⭐⭐</div>
+            <div class="md:w-1/2 flex flex-col py-2">
+                <div class="space-y-4 mb-8">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-amber-500 text-xs font-black">★★★★★</span>
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-0.5 rounded ml-1">
+                            <%c++ ProductDetail_tmp_stream << reviews.size(); %> SHARH
+                        </span>
                     </div>
-                    <p class="text-slate-300 font-light">Bu mahsulot kutilganidan juda zo'r ekan! Menga manzur keldi.</p>
+
+                    <h1 class="text-2xl md:text-3xl font-bold text-slate-800 tracking-tight leading-tight"><%c++ ProductDetail_tmp_stream << product.at("title"); %></h1>
+                    
+                    <div class="flex items-center gap-4">
+                        <span class="text-3xl font-black text-slate-900 tracking-tighter">$<%c++ ProductDetail_tmp_stream << product.at("price"); %></span>
+                        <%c++ 
+                            if (product.count("discount_percentage") && !product.at("discount_percentage").empty() && product.at("discount_percentage") != "0") {
+                                try {
+                                    double price = std::stod(product.at("price"));
+                                    double discount = std::stod(product.at("discount_percentage"));
+                                    if (discount > 0 && discount < 100) {
+                                        double original = price / (1.0 - (discount/100.0));
+                        %>
+                            <span class="text-sm text-slate-400 line-through font-bold opacity-50">$<%c++ ProductDetail_tmp_stream << std::fixed << std::setprecision(2) << original; %></span>
+                        <%c++ 
+                                    }
+                                } catch(...) {}
+                            }
+                        %>
+                    </div>
+                </div>
+
+                <div class="space-y-4 flex-grow">
+                    <div class="space-y-1.5">
+                        <h2 class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Tavsif va xususiyatlar</h2>
+                        <p class="text-xs text-slate-500 leading-relaxed font-medium"><%c++ ProductDetail_tmp_stream << product.at("description"); %></p>
+                    </div>
+
+                    <div class="flex items-center gap-2 py-3 border-y border-slate-50">
+                        <div class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></div>
+                        <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Omborda: <%c++ ProductDetail_tmp_stream << product.at("stock"); %> TA</span>
+                    </div>
+                </div>
+
+                <div class="pt-8 space-y-3">
+                    <form action="/cart/add" method="POST" class="flex gap-3">
+                        <input type="hidden" name="csrf_token" value="<%c++ ProductDetail_tmp_stream << @@.get<std::string>("csrf_token"); %>">
+                        <input type="hidden" name="product_id" value="<%c++ ProductDetail_tmp_stream << product.at("id"); %>">
+                        
+                        <div class="flex items-center bg-slate-50 border border-slate-200 rounded-lg p-1 shrink-0">
+                            <button type="button" onclick="this.nextElementSibling.stepDown()" class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-amber-700 transition font-black">-</button>
+                            <input type="number" name="quantity" value="1" min="1" max="<%c++ ProductDetail_tmp_stream << product.at("stock"); %>" 
+                                class="w-10 bg-transparent text-[11px] font-black text-center outline-none">
+                            <button type="button" onclick="this.previousElementSibling.stepUp()" class="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-amber-700 transition font-black">+</button>
+                        </div>
+
+                        <button class="flex-grow btn-amber py-3 text-[10px] uppercase tracking-widest shadow-xl shadow-amber-900/10">SAVATGA QO'SHISH</button>
+                    </form>
+
+                    <form action="/wishlist/add/<%c++ ProductDetail_tmp_stream << product.at("id"); %>" method="POST">
+                        <input type="hidden" name="csrf_token" value="<%c++ ProductDetail_tmp_stream << @@.get<std::string>("csrf_token"); %>">
+                        <button class="w-full btn-outline py-3 text-[10px] uppercase tracking-widest flex items-center justify-center gap-2">
+                            ❤️ SEVIMLILARGA
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-8">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <h2 class="text-sm font-black text-slate-800 uppercase tracking-widest">Mijozlar fikri</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+                <div class="lg:col-span-1 space-y-6">
+                    <%c++ if (is_logged_in) { %>
+                    <div class="card p-6 bg-slate-50/50">
+                        <h3 class="text-[10px] font-black text-slate-800 mb-4 uppercase tracking-widest">Sharh qoldirish</h3>
+                        <form action="/api/review" method="POST" class="space-y-4">
+                            <input type="hidden" name="csrf_token" value="<%c++ ProductDetail_tmp_stream << @@.get<std::string>("csrf_token"); %>">
+                            <input type="hidden" name="product_id" value="<%c++ ProductDetail_tmp_stream << product.at("id"); %>">
+                            
+                            <div class="space-y-1.5">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Baholash</label>
+                                <select name="rating" class="w-full bg-white border border-slate-200 rounded p-2.5 text-[10px] font-black outline-none">
+                                    <option value="5">★★★★★ - Zo'r</option>
+                                    <option value="4">★★★★ - Yaxshi</option>
+                                    <option value="3">★★★ - O'rtacha</option>
+                                    <option value="2">★★ - Yomon</option>
+                                    <option value="1">★ - Juda yomon</option>
+                                </select>
+                            </div>
+                            
+                            <div class="space-y-1.5">
+                                <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Izoh</label>
+                                <textarea name="comment" rows="3" class="w-full bg-white border border-slate-200 rounded p-3 text-[11px] font-medium outline-none resize-none" placeholder="Fikringiz..."></textarea>
+                            </div>
+                            
+                            <button class="w-full btn-amber py-2.5 text-[9px] uppercase tracking-widest">YUBORISH</button>
+                        </form>
+                    </div>
+                    <%c++ } else { %>
+                    <div class="card p-8 text-center space-y-3 border-dashed">
+                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Sharh uchun kiring</p>
+                        <a href="/api/login" class="inline-block btn-outline px-6 py-2 text-[9px] uppercase tracking-widest">KIRISH</a>
+                    </div>
+                    <%c++ } %>
+                </div>
+
+                <div class="lg:col-span-3 space-y-4">
+                    <%c++ if (reviews.empty()) { %>
+                        <div class="text-center py-16 bg-slate-50/20 rounded-xl border border-dashed border-slate-100 italic text-[10px] font-black text-slate-300 uppercase tracking-widest">
+                            Hali sharhlar mavjud emas
+                        </div>
+                    <%c++ } else { %>
+                        <%c++ for(auto &rev : reviews) { %>
+                            <div class="review-card p-5 group hover:border-amber-200 transition-colors">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 bg-slate-100 rounded flex items-center justify-center text-[10px] font-black text-slate-500">
+                                            <%c++ ProductDetail_tmp_stream << (rev.at("full_name").empty() ? "?" : rev.at("full_name").substr(0,1)); %>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-[11px] font-bold text-slate-800"><%c++ ProductDetail_tmp_stream << rev.at("full_name"); %></h4>
+                                            <p class="text-[9px] font-black text-slate-400 uppercase tracking-tight opacity-60"><%c++ ProductDetail_tmp_stream << rev.at("created_at").substr(0,10); %></p>
+                                        </div>
+                                    </div>
+                                    <div class="text-amber-500 text-[10px] font-black">
+                                        <%c++ 
+                                            try {
+                                                int r = std::stoi(rev.at("rating"));
+                                                for(int i=0; i<r; i++) ProductDetail_tmp_stream << "★";
+                                            } catch(...) {}
+                                        %>
+                                    </div>
+                                </div>
+                                <p class="text-[11px] font-medium text-slate-500 leading-relaxed"><%c++ ProductDetail_tmp_stream << rev.at("comment"); %></p>
+                            </div>
+                        <%c++ } %>
+                    <%c++ } %>
                 </div>
             </div>
         </div>
     </main>
+
+    <footer class="mt-auto py-8 border-t border-slate-50 text-center">
+        <p class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">© 2026 CYBERSHOP GLOBAL</p>
+    </footer>
+</body>
+</html>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

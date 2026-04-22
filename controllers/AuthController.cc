@@ -86,3 +86,4 @@ void AuthController::handleRegister(const HttpRequestPtr& req, std::function<voi
         name, email, hashed_pw
     );
 }
+

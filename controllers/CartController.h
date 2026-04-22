@@ -1,5 +1,6 @@
 #pragma once
 #include <drogon/HttpController.h>
+#include "filters/LoginFilter.h"
 
 using namespace drogon;
 
@@ -9,7 +10,7 @@ public:
     METHOD_LIST_BEGIN
         ADD_METHOD_TO(CartController::viewCart, "/cart", Get, "LoginFilter");
         ADD_METHOD_TO(CartController::addToCart, "/cart/add", Post, "LoginFilter");
-        ADD_METHOD_TO(CartController::removeFromCart, "/cart/remove/{1}", Get, "LoginFilter");
+        ADD_METHOD_TO(CartController::removeFromCart, "/cart/remove/{1}", Post, "LoginFilter");
     METHOD_LIST_END
 
     void viewCart(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback);

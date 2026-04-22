@@ -1,0 +1,165 @@
+<%view AddCard %>
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <title>Karta ulash - CyberShop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --bg: #f8fafc;
+            --card-front: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        body { background: var(--bg); display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+
+        .card-container { width: 100%; max-width: 450px; }
+
+        /* Card Preview */
+        .card-preview {
+            width: 100%;
+            aspect-ratio: 1.6 / 1;
+            background: linear-gradient(135deg, #1e293b, #334155);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            position: relative;
+            margin-bottom: -60px;
+            z-index: 2;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .chip { width: 45px; height: 35px; background: linear-gradient(135deg, #fcd34d, #f59e0b); border-radius: 6px; }
+        .preview-number { font-size: 22px; letter-spacing: 2px; font-weight: 600; font-family: monospace; }
+        .preview-bottom { display: flex; justify-content: space-between; align-items: flex-end; }
+        .preview-label { font-size: 10px; opacity: 0.6; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        .preview-val { font-size: 14px; font-weight: 600; text-transform: uppercase; }
+
+        /* Form Card */
+        .form-card {
+            background: white;
+            padding: 90px 40px 40px;
+            border-radius: 24px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+            border: 1px solid var(--border);
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-size: 14px; font-weight: 600; color: var(--text-muted); }
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            outline: none;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1); }
+        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        .btn-submit:hover { background: #4f46e5; transform: translateY(-2px); }
+        .back-link { display: block; text-align: center; margin-top: 20px; color: var(--text-muted); text-decoration: none; font-size: 14px; }
+        .back-link:hover { color: var(--primary); }
+    </style>
+</head>
+<body>
+    <div class="card-container">
+        <div class="card-preview">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div class="chip"></div>
+                <i class="fab fa-cc-visa" style="font-size: 32px; opacity: 0.8;"></i>
+            </div>
+            <div class="preview-number" id="prevNumber">8600 0000 0000 0000</div>
+            <div class="preview-bottom">
+                <div>
+                    <span class="preview-label">Karta egasi</span>
+                    <span class="preview-val" id="prevHolder">ISLOM QOBULOV</span>
+                </div>
+                <div>
+                    <span class="preview-label">Muddati</span>
+                    <span class="preview-val" id="prevExpiry">12/28</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <form action="/wallet/add-card" method="POST">
+                <div class="form-group">
+                    <label>Karta raqami</label>
+                    <input type="text" name="card_number" id="cardInput" class="form-control" maxlength="19" placeholder="8600 0000 0000 0000" required>
+                </div>
+                <div class="form-group">
+                    <label>Karta egasi (Lotincha)</label>
+                    <input type="text" name="card_holder" id="holderInput" class="form-control" placeholder="ISM FAMILIYA" required oninput="this.value = this.value.toUpperCase()">
+                </div>
+                <div class="row">
+                    <div class="form-group">
+                        <label>Muddati</label>
+                        <input type="text" name="expiry_date" id="expiryInput" class="form-control" placeholder="MM/YY" maxlength="5" required>
+                    </div>
+                    <div class="form-group">
+                        <label>CVV (Ixtiyoriy)</label>
+                        <input type="password" class="form-control" placeholder="***" maxlength="3">
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">Kartani saqlash</button>
+                <a href="/wallet" class="back-link">Hamyonga qaytish</a>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const cardInput = document.getElementById('cardInput');
+        const holderInput = document.getElementById('holderInput');
+        const expiryInput = document.getElementById('expiryInput');
+
+        const prevNumber = document.getElementById('prevNumber');
+        const prevHolder = document.getElementById('prevHolder');
+        const prevExpiry = document.getElementById('prevExpiry');
+
+        cardInput.addEventListener('input', (e) => {
+            let val = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formatted = '';
+            for (let i = 0; i < val.length; i++) {
+                if (i > 0 && i % 4 === 0) formatted += ' ';
+                formatted += val[i];
+            }
+            e.target.value = formatted;
+            prevNumber.textContent = formatted || '8600 0000 0000 0000';
+        });
+
+        holderInput.addEventListener('input', (e) => {
+            prevHolder.textContent = e.target.value || 'ISH FAMILIYA';
+        });
+
+        expiryInput.addEventListener('input', (e) => {
+            let val = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            if (val.length > 2) {
+                val = val.substr(0, 2) + '/' + val.substr(2, 2);
+            }
+            e.target.value = val;
+            prevExpiry.textContent = val || '12/28';
+        });
+    </script>
+</body>
+</html>

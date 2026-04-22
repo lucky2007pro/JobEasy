@@ -1,18 +1,42 @@
 #include "ProfileController.h"
 #include <drogon/drogon.h>
+#include <drogon/utils/Utilities.h>
 #include <map>
 
 using namespace drogon;
 using namespace drogon::orm;
 
+namespace
+{
+std::string ensureCsrfToken(const HttpRequestPtr &req)
+{
+    auto session = req->getSession();
+    if (!session->find("csrf_token"))
+    {
+        session->insert("csrf_token", drogon::utils::getUuid());
+    }
+    return session->get<std::string>("csrf_token");
+}
+
+bool validateCsrfToken(const HttpRequestPtr &req)
+{
+    auto session = req->getSession();
+    if (!session->find("csrf_token"))
+    {
+        return false;
+    }
+    auto token = req->getParameter("csrf_token");
+    if (token.empty())
+    {
+        return false;
+    }
+    return token == session->get<std::string>("csrf_token");
+}
+}  // namespace
+
 void ProfileController::viewProfile(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback)
 {
     auto session = req->getSession();
-    if (!session->find("user_id")) {
-        auto resp = HttpResponse::newRedirectionResponse("/api/login");
-        callback(resp);
-        return;
-    }
     
     int user_id = session->get<int>("user_id");
     
@@ -40,6 +64,7 @@ void ProfileController::viewProfile(const HttpRequestPtr& req, std::function<voi
         profile["city"] = row["city"].isNull() ? "" : row["city"].as<std::string>();
         
         data.insert("profile", profile);
+        data.insert("csrf_token", ensureCsrfToken(req));
         
         auto resp = HttpResponse::newHttpViewResponse("Profile", data);
         callback(resp);
@@ -54,13 +79,14 @@ void ProfileController::viewProfile(const HttpRequestPtr& req, std::function<voi
 void ProfileController::updateProfile(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback)
 {
     auto session = req->getSession();
-    if (!session->find("user_id")) {
-        auto resp = HttpResponse::newRedirectionResponse("/api/login");
+    
+    int user_id = session->get<int>("user_id");
+    if (!validateCsrfToken(req)) {
+        auto resp = HttpResponse::newHttpResponse();
+        resp->setStatusCode(k403Forbidden);
         callback(resp);
         return;
     }
-    
-    int user_id = session->get<int>("user_id");
     auto phone = req->getParameter("phone_number");
     auto address = req->getParameter("address_line");
     auto city = req->getParameter("city");
