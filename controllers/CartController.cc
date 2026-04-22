@@ -6,6 +6,50 @@
 
 namespace
 {
+std::string columnToStringSafe(const drogon::orm::Row &row,
+                               const std::string &columnName,
+                               const std::string &fallback = "")
+{
+    try
+    {
+        if (row[columnName].isNull())
+        {
+            return fallback;
+        }
+        return row[columnName].as<std::string>();
+    }
+    catch (const std::exception &)
+    {
+        return fallback;
+    }
+}
+
+bool parseIntSafe(const std::string &value, int &out)
+{
+    try
+    {
+        out = std::stoi(value);
+        return true;
+    }
+    catch (const std::exception &)
+    {
+        return false;
+    }
+}
+
+bool parseDoubleSafe(const std::string &value, double &out)
+{
+    try
+    {
+        out = std::stod(value);
+        return true;
+    }
+    catch (const std::exception &)
+    {
+        return false;
+    }
+}
+
 std::string ensureCsrfToken(const HttpRequestPtr &req)
 {
     auto session = req->session();
@@ -59,15 +103,23 @@ void CartController::viewCart(const HttpRequestPtr& req, std::function<void(cons
             
             for (const auto& row : r) {
                 std::map<std::string, std::string> item;
-                item["cart_id"] = row["cart_id"].as<std::string>();
-                item["product_id"] = row["product_id"].as<std::string>();
-                item["title"] = row["title"].as<std::string>();
-                item["price"] = row["price"].as<std::string>();
-                item["image_url"] = row["image_url"].as<std::string>();
-                item["quantity"] = row["quantity"].as<std::string>();
+                item["cart_id"] = columnToStringSafe(row, "cart_id", "");
+                item["product_id"] = columnToStringSafe(row, "product_id", "");
+                item["title"] = columnToStringSafe(row, "title", "");
+                item["price"] = columnToStringSafe(row, "price", "0");
+                item["image_url"] = columnToStringSafe(row, "image_url", "");
+                item["quantity"] = columnToStringSafe(row, "quantity", "1");
                 
-                double price = std::stod(item["price"]);
-                int qty = std::stoi(item["quantity"]);
+                double price = 0.0;
+                int qty = 1;
+                if (!parseDoubleSafe(item["price"], price))
+                {
+                    price = 0.0;
+                }
+                if (!parseIntSafe(item["quantity"], qty) || qty < 1)
+                {
+                    qty = 1;
+                }
                 total += (price * qty);
                 item["subtotal"] = std::to_string(price * qty);
                 
@@ -100,10 +152,18 @@ void CartController::addToCart(const HttpRequestPtr& req, std::function<void(con
     }
     auto userId = req->session()->get<int>("user_id");
     auto params = req->getParameters();
-    int productId = std::stoi(params["product_id"]);
+    int productId = 0;
+    if (!parseIntSafe(params["product_id"], productId) || productId <= 0)
+    {
+        callback(HttpResponse::newHttpJsonResponse(Json::Value("Xato: product_id noto'g'ri.")));
+        return;
+    }
     int quantity = 1;
     if (params.find("quantity") != params.end()) {
-        quantity = std::stoi(params["quantity"]);
+        if (!parseIntSafe(params["quantity"], quantity) || quantity <= 0)
+        {
+            quantity = 1;
+        }
     }
     
     auto dbClient = drogon::app().getDbClient("default");

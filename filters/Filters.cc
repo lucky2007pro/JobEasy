@@ -1,9 +1,7 @@
-#include <drogon/HttpFilter.h>
+#include <drogon/drogon.h>
 #include "LoginFilter.h"
 #include "AdminFilter.h"
 
 using namespace drogon;
 
-// These macros are handled by the Drogon reflection system
-REGISTER_FILTER(LoginFilter);
-REGISTER_FILTER(AdminFilter);
+// Drogon 1.9+ does not require explicit filter registration macros here.
