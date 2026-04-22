@@ -7,9 +7,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style> 
-        body { font-family: 'Outfit', sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        :root { --bg: #0f172a; --text: #f8fafc; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
+        .light { --bg: #f8fafc; --text: #0f172a; --glass: rgba(0, 0, 0, 0.05); --border: rgba(0, 0, 0, 0.1); }
+        body { font-family: 'Outfit', sans-serif; background-color: var(--bg); color: var(--text); transition: background-color 0.3s, color 0.3s; }
+        .glass { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); }
     </style>
+    <script>
+        if (localStorage.theme === 'light' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+            document.documentElement.classList.add('light')
+        } else {
+            document.documentElement.classList.remove('light')
+        }
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('light')) {
+                document.documentElement.classList.remove('light');
+                localStorage.theme = 'dark';
+            } else {
+                document.documentElement.classList.add('light');
+                localStorage.theme = 'light';
+            }
+        }
+    </script>
 </head>
 <body class="min-h-screen flex flex-col">
     <%c++
@@ -23,6 +41,9 @@
         <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
             <a href="/" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-500 tracking-tighter">CyberShop</a>
             <div class="flex items-center space-x-6">
+                <button onclick="toggleTheme()" class="w-10 h-10 glass rounded-xl flex items-center justify-center hover:scale-110 transition">🌓</button>
+                <a href="/" class="text-slate-300 hover:text-cyan-400 font-semibold transition">Bosh sahifa</a>
+                <a href="/wishlist" class="text-slate-300 hover:text-cyan-400 font-semibold transition">Sevimlilar ❤️</a>
                 <a href="/cart" class="text-slate-300 hover:text-cyan-400 font-semibold transition">Savatcha 🛒</a>
                 <%c++ if (is_logged_in) { %>
                     <a href="/orders" class="text-slate-300 hover:text-fuchsia-400 font-semibold transition">Buyurtmalar</a>
@@ -50,6 +71,19 @@
                     <span class="w-3 h-10 bg-cyan-400 rounded-full mr-4 shadow-[0_0_10px_rgba(34,211,238,0.6)]"></span>
                     🔥 Top Mahsulotlar
                 </h2>
+                <div class="flex gap-4">
+                    <select id="sortSelect" onchange="window.location.href='/?sort=' + this.value" class="bg-slate-800 text-slate-300 px-4 py-2 rounded-xl border border-slate-700 outline-none focus:border-cyan-500">
+                        <option value="newest">Yangi mahsulotlar</option>
+                        <option value="price_asc">Narxi (Arzon-Qimmat)</option>
+                        <option value="price_desc">Narxi (Qimmat-Arzon)</option>
+                        <option value="oldest">Eski mahsulotlar</option>
+                    </select>
+                    <script>
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const sort = urlParams.get('sort');
+                        if (sort) document.getElementById('sortSelect').value = sort;
+                    </script>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -66,12 +100,17 @@
                             <h3 class="text-xl font-bold mb-2 group-hover:text-cyan-400 transition truncate"><a href="/product/<%c++ index_tmp_stream << p.at("id"); %>"><%c++ index_tmp_stream << p.at("title"); %></a></h3>
                             <p class="text-fuchsia-400 font-black text-2xl mb-4">$<%c++ index_tmp_stream << p.at("price"); %></p>
                             
-                            <form action="/cart/add" method="POST" class="mt-auto">
-                                <input type="hidden" name="product_id" value="<%c++ index_tmp_stream << p.at("id"); %>">
-                                <button class="w-full py-3 rounded-xl bg-slate-800 hover:bg-cyan-500 text-slate-300 hover:text-slate-900 font-bold transition-all flex items-center justify-center gap-2">
-                                    <span>Savatchaga qo'shish</span> <span>+</span>
-                                </button>
-                            </form>
+                            <div class="flex gap-2 mt-auto">
+                                <form action="/cart/add" method="POST" class="flex-grow">
+                                    <input type="hidden" name="product_id" value="<%c++ index_tmp_stream << p.at("id"); %>">
+                                    <button class="w-full py-3 rounded-xl bg-slate-800 hover:bg-cyan-500 text-slate-300 hover:text-slate-900 font-bold transition-all flex items-center justify-center gap-2">
+                                        <span>+ 🛒</span>
+                                    </button>
+                                </form>
+                                <a href="/wishlist/add/<%c++ index_tmp_stream << p.at("id"); %>" class="px-4 py-3 rounded-xl bg-slate-800 hover:bg-fuchsia-500 text-fuchsia-400 hover:text-white transition-all flex items-center justify-center">
+                                    ❤️
+                                </a>
+                            </div>
                         </div>
                     </div>
                 <%c++ } %>

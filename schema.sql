@@ -68,3 +68,11 @@ CREATE TABLE IF NOT EXISTS user_profiles (
     avatar_url VARCHAR(255),
     saved_payment_mock VARCHAR(50)
 );
+
+CREATE TABLE IF NOT EXISTS wishlist (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    product_id INTEGER REFERENCES products(id) ON DELETE CASCADE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, product_id)
+);

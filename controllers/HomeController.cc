@@ -13,8 +13,21 @@ void HomeController::index(const HttpRequestPtr& req, std::function<void (const 
         isLoggedIn = true;
     }
 
+    std::string sortBy = req->getParameter("sort");
+    std::string sql = "SELECT id, title, price, image_url FROM products";
+    
+    if (sortBy == "price_asc") {
+        sql += " ORDER BY price ASC";
+    } else if (sortBy == "price_desc") {
+        sql += " ORDER BY price DESC";
+    } else if (sortBy == "oldest") {
+        sql += " ORDER BY id ASC";
+    } else {
+        sql += " ORDER BY id DESC"; // default is newest
+    }
+
     dbClient->execSqlAsync(
-        "SELECT id, title, price, image_url FROM products ORDER BY id DESC",
+        sql,
         [callback, userName, isLoggedIn](const drogon::orm::Result& r) {
             HttpViewData data;
             data.insert("user_name", userName);

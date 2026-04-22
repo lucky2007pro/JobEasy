@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberShop | Sevimlilar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style> 
+        :root { --bg: #0f172a; --text: #f8fafc; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
+        .light { --bg: #f8fafc; --text: #0f172a; --glass: rgba(0, 0, 0, 0.05); --border: rgba(0, 0, 0, 0.1); }
+        body { font-family: 'Outfit', sans-serif; background-color: var(--bg); color: var(--text); transition: background-color 0.3s, color 0.3s; }
+        .glass { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); }
+    </style>
+    <script>
+        if (localStorage.theme === 'light' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+            document.documentElement.classList.add('light')
+        } else {
+            document.documentElement.classList.remove('light')
+        }
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('light')) {
+                document.documentElement.classList.remove('light');
+                localStorage.theme = 'dark';
+            } else {
+                document.documentElement.classList.add('light');
+                localStorage.theme = 'light';
+            }
+        }
+    </script>
+</head>
+<body class="min-h-screen flex flex-col">
+    <%c++
+        using ProductItem = std::map<std::string, std::string>;
+        auto &items = @@.get<std::vector<ProductItem>>("wishlist_items");
+        auto &name = @@.get<std::string>("user_name");
+        auto is_logged_in = @@.get<bool>("is_logged_in");
+    %>
+    
+    <nav class="glass sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+            <a href="/" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-500 tracking-tighter">CyberShop</a>
+            <div class="flex items-center space-x-6">
+                <button onclick="toggleTheme()" class="w-10 h-10 glass rounded-xl flex items-center justify-center hover:scale-110 transition">🌓</button>
+                <a href="/" class="text-slate-300 hover:text-cyan-400 font-semibold transition">Bosh sahifa</a>
+                <a href="/wishlist" class="text-cyan-400 font-semibold transition underline decoration-2 underline-offset-8">Sevimlilar ❤️</a>
+                <a href="/cart" class="text-slate-300 hover:text-cyan-400 font-semibold transition">Savatcha 🛒</a>
+                <a href="/orders" class="text-slate-300 hover:text-fuchsia-400 font-semibold transition">Buyurtmalar</a>
+                <div class="glass px-4 py-1.5 rounded-full text-sm">
+                    <span>Salom, <b class="text-cyan-400"><%c++ Wishlist_tmp_stream << name; %></b></span>
+                </div>
+                <a href="/api/logout" class="bg-red-500/20 hover:bg-red-500/40 text-red-100 px-4 py-2 rounded-xl text-sm font-bold transition">Chiqish</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow max-w-7xl mx-auto py-12 px-6 w-full space-y-10">
+        <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-fuchsia-500 rounded-2xl flex items-center justify-center shadow-[0_0_15px_rgba(192,38,211,0.5)]">
+                <span class="text-2xl text-white">❤️</span>
+            </div>
+            <div>
+                <h1 class="text-4xl font-black">Sizning Sevimlilaringiz</h1>
+                <p class="text-slate-400">Keyinroq sotib olish uchun saqlab qo'yilgan mahsulotlar</p>
+            </div>
+        </div>
+
+        <%c++ if (items.empty()) { %>
+            <div class="glass rounded-[2rem] p-20 text-center space-y-6">
+                <div class="text-6xl">🕯️</div>
+                <h2 class="text-2xl font-bold text-slate-300">Hozircha sevimlilar ro'yxati bo'sh</h2>
+                <p class="text-slate-500 max-w-md mx-auto">Eng zo'r mahsulotlarni topib, ularni shu yerda saqlab qolishingiz mumkin!</p>
+                <a href="/" class="inline-block bg-cyan-500 text-slate-900 px-8 py-3 rounded-xl font-bold hover:shadow-[0_0_15px_rgba(34,211,238,0.4)] transition">Xaridni boshlash</a>
+            </div>
+        <%c++ } else { %>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                <%c++ for(auto &p : items) { %>
+                    <div class="glass rounded-3xl overflow-hidden group hover:scale-[1.02] transition-all duration-300">
+                        <div class="h-48 bg-slate-800 flex items-center justify-center p-4 relative">
+                            <%c++ if (!p.at("image_url").empty()) { %>
+                                <img src="<%c++ Wishlist_tmp_stream << p.at("image_url"); %>" alt="Product" class="max-h-full object-contain">
+                            <%c++ } else { %>
+                                <div class="text-slate-600 text-5xl">📦</div>
+                            <%c++ } %>
+                            <a href="/wishlist/remove/<%c++ Wishlist_tmp_stream << p.at("id"); %>" class="absolute top-4 right-4 w-10 h-10 bg-red-500 text-white rounded-full flex items-center justify-center hover:scale-110 transition shadow-lg">✕</a>
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-lg font-bold mb-1 truncate"><%c++ Wishlist_tmp_stream << p.at("title"); %></h3>
+                            <p class="text-cyan-400 font-bold text-xl mb-4">$<%c++ Wishlist_tmp_stream << p.at("price"); %></p>
+                            
+                            <div class="flex gap-2">
+                                <a href="/product/<%c++ Wishlist_tmp_stream << p.at("id"); %>" class="flex-grow py-2.5 rounded-lg bg-slate-800 text-slate-300 text-center text-sm font-bold hover:bg-slate-700 transition">Batafsil</a>
+                                <form action="/cart/add" method="POST" class="flex-grow">
+                                    <input type="hidden" name="product_id" value="<%c++ Wishlist_tmp_stream << p.at("id"); %>">
+                                    <button class="w-full py-2.5 rounded-lg bg-cyan-500 text-slate-900 text-sm font-bold hover:shadow-[0_0_10px_rgba(34,211,238,0.4)] transition">Sotib olish</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                <%c++ } %>
+            </div>
+        <%c++ } %>
+    </main>
+
+    <footer class="border-t border-slate-800 text-center py-8 text-slate-500 text-sm mt-auto">
+        &copy; 2026 CyberShop | Premium E-commerce
+    </footer>
+</body>
+</html>

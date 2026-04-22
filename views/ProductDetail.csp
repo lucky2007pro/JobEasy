@@ -7,9 +7,27 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style> 
-        body { font-family: 'Outfit', sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        :root { --bg: #0f172a; --text: #f8fafc; --glass: rgba(255, 255, 255, 0.05); --border: rgba(255, 255, 255, 0.1); }
+        .light { --bg: #f8fafc; --text: #0f172a; --glass: rgba(0, 0, 0, 0.05); --border: rgba(0, 0, 0, 0.1); }
+        body { font-family: 'Outfit', sans-serif; background-color: var(--bg); color: var(--text); transition: background-color 0.3s, color 0.3s; }
+        .glass { background: var(--glass); backdrop-filter: blur(10px); border: 1px solid var(--border); }
     </style>
+    <script>
+        if (localStorage.theme === 'light' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+            document.documentElement.classList.add('light')
+        } else {
+            document.documentElement.classList.remove('light')
+        }
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('light')) {
+                document.documentElement.classList.remove('light');
+                localStorage.theme = 'dark';
+            } else {
+                document.documentElement.classList.add('light');
+                localStorage.theme = 'light';
+            }
+        }
+    </script>
 </head>
 <body class="min-h-screen flex flex-col">
     <%c++
@@ -21,7 +39,10 @@
     <nav class="glass sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
             <a href="/" class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-500 tracking-tighter">CyberShop</a>
-            <div class="flex space-x-6">
+            <div class="flex items-center space-x-6">
+                <button onclick="toggleTheme()" class="w-10 h-10 glass rounded-xl flex items-center justify-center hover:scale-110 transition">🌓</button>
+                <a href="/" class="text-slate-300 hover:text-cyan-400 font-semibold transition">Bosh sahifa</a>
+                <a href="/wishlist" class="text-slate-300 hover:text-cyan-400 font-semibold transition">Sevimlilar ❤️</a>
                 <a href="/cart" class="text-slate-300 hover:text-cyan-400 font-semibold transition">Savatcha 🛒</a>
             </div>
         </div>
@@ -54,6 +75,9 @@
                     <button class="flex-grow bg-gradient-to-r from-cyan-500 to-blue-600 text-white py-4 rounded-xl font-black text-lg hover:shadow-[0_0_20px_rgba(34,211,238,0.6)] transition-all transform hover:-translate-y-1 border border-cyan-400/50">
                         Savatchaga qo'shish
                     </button>
+                    <a href="/wishlist/add/<%c++ ProductDetail_tmp_stream << product.at("id"); %>" class="w-16 h-16 glass rounded-xl flex items-center justify-center text-2xl text-fuchsia-400 hover:bg-fuchsia-500 hover:text-white transition shadow-lg border border-fuchsia-400/30">
+                        ❤️
+                    </a>
                 </form>
             </div>
         </div>
