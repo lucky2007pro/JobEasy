@@ -21,7 +21,7 @@
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
-    <aside class="w-64 sidebar flex flex-col z-30 shrink-0">
+    <aside class="hidden md:flex w-64 sidebar flex-col z-30 shrink-0">
         <div class="p-6 flex items-center gap-2">
             <div class="w-7 h-7 bg-amber-700 rounded-lg flex items-center justify-center text-white font-black text-xs">C</div>
             <h2 class="text-base font-bold text-slate-800 tracking-tight">CyberShop Admin</h2>
@@ -51,7 +51,7 @@
         </nav>
     </aside>
 
-    <main class="flex-1 overflow-y-auto flex flex-col">
+    <main class="flex-1 overflow-y-auto flex flex-col pb-20 md:pb-0">
         <header class="h-14 bg-white border-b border-slate-200 flex items-center justify-between px-8 sticky top-0 z-20">
             <div class="flex items-center gap-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
                 <span>Boshqaruv</span> <span class="text-slate-200">/</span> <span class="text-slate-800">Buyurtmalar</span>
@@ -107,5 +107,28 @@
             </div>
         </div>
     </main>
+    <!-- Admin Mobile Bottom Nav -->
+    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 z-50 flex justify-between items-center text-slate-400 p-safe shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+        <a href="/admin/dashboard" class="flex-1 py-3 flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">📦</span>
+            <span class="text-[8px] font-black uppercase mt-1">Mahsulot</span>
+        </a>
+        <a href="/admin/analytics" class="flex-1 py-3 flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">📊</span>
+            <span class="text-[8px] font-black uppercase mt-1">Analitika</span>
+        </a>
+        <a href="/admin/orders" class="flex-1 py-3 flex flex-col items-center hover:text-amber-700 text-amber-700 transition">
+            <span class="text-xl leading-none">🚚</span>
+            <span class="text-[8px] font-black uppercase mt-1">Buyurtma</span>
+        </a>
+        <a href="/admin/categories" class="flex-1 py-3 flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">📁</span>
+            <span class="text-[8px] font-black uppercase mt-1">Kategoriya</span>
+        </a>
+        <a href="/" class="flex-1 py-3 flex flex-col items-center hover:text-amber-700 transition text-slate-300 hover:text-slate-500">
+            <span class="text-xl leading-none">🌐</span>
+            <span class="text-[8px] font-black uppercase mt-1">Sayt</span>
+        </a>
+    </nav>
 </body>
 </html>
