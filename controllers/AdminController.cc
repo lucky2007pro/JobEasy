@@ -109,7 +109,7 @@ void AdminController::analytics(const HttpRequestPtr& req, std::function<void(co
                                 std::map<std::string, std::string> order;
                                 order["id"] = row["id"].as<std::string>();
                                 order["full_name"] = row["full_name"].as<std::string>();
-                                order["total"] = row["final_total"].as<std::string>();
+                                order["total"] = row["final_total"].isNull() ? "0" : row["final_total"].as<std::string>();
                                 order["status"] = row["status"].as<std::string>();
                                 order["date"] = row["created_at"].as<std::string>();
                                 recent_orders.push_back(order);
@@ -184,7 +184,7 @@ void AdminController::updateStock(const HttpRequestPtr& req, std::function<void(
 void AdminController::allOrders(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
     auto dbClient = app().getDbClient();
     dbClient->execSqlAsync(
-        "SELECT o.id, u.full_name, o.final_total, o.status, o.created_at FROM orders o "
+        "SELECT o.id, u.full_name, o.final_total, o.status, o.created_at, o.shipping_address FROM orders o "
         "JOIN users u ON o.user_id = u.id ORDER BY o.created_at DESC",
         [callback, req](const drogon::orm::Result& r) {
             HttpViewData data;
@@ -194,8 +194,11 @@ void AdminController::allOrders(const HttpRequestPtr& req, std::function<void(co
                 order["id"] = row["id"].as<std::string>();
                 order["full_name"] = row["full_name"].as<std::string>();
                 order["total"] = row["final_total"].isNull() ? "0" : row["final_total"].as<std::string>();
+                order["total_price"] = row["final_total"].isNull() ? "0" : row["final_total"].as<std::string>();
                 order["status"] = row["status"].as<std::string>();
                 order["date"] = row["created_at"].as<std::string>();
+                order["shipping_address"] = row["shipping_address"].isNull() ? "" : row["shipping_address"].as<std::string>();
+                order["created_at"] = row["created_at"].as<std::string>();
                 orders.push_back(order);
             }
             data.insert("orders", orders);
