@@ -54,7 +54,7 @@
                             <p class="text-[9px] font-black text-slate-400 uppercase leading-none mb-0.5">Mening</p>
                             <p class="text-[10px] font-bold text-slate-800 group-hover:text-amber-700 transition leading-none">Profilim</p>
                         </div>
-                        <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-700"><%c++ index_tmp_stream << name.substr(0,1); %></div>
+                        <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-700"><%c++ HomePage_tmp_stream << name.substr(0,1); %></div>
                     </a>
                 <%c++ } else { %>
                     <a href="/login" class="btn-amber px-4 py-1.5 text-[10px] uppercase tracking-widest">KIRISH</a>
@@ -65,8 +65,8 @@
         <div class="max-w-7xl mx-auto px-4 md:px-8 py-2 pb-3 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-slate-50">
             <a href="/" class="category-pill <%= current_page == 1 ? "active" : "" %>HAMMASI</a>
             <%c++ for(auto &cat : categories) { %>
-                <a href="/search?category_id=<%c++ index_tmp_stream << cat.at("id"); %>" class="category-pill">
-                    <%c++ index_tmp_stream << cat.at("name"); %>
+                <a href="/search?category_id=<%c++ HomePage_tmp_stream << cat.at("id"); %>" class="category-pill">
+                    <%c++ HomePage_tmp_stream << cat.at("name"); %>
                 </a>
             <%c++ } %>
         </div>
@@ -99,9 +99,9 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-5">
                 <%c++ for(auto &p : products) { %>
                     <div class="product-card flex flex-col group p-2 relative">
-                        <a href="/product/<%c++ index_tmp_stream << p.at("id"); %>" class="h-36 bg-slate-50 border border-slate-100 rounded-lg mb-2 flex items-center justify-center p-4 relative overflow-hidden">
+                        <a href="/product/<%c++ HomePage_tmp_stream << p.at("id"); %>" class="h-36 bg-slate-50 border border-slate-100 rounded-lg mb-2 flex items-center justify-center p-4 relative overflow-hidden">
                             <%c++ if (!p.at("image_url").empty()) { %>
-                                <img src="<%c++ index_tmp_stream << p.at("image_url"); %>" alt="Product" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-110">
+                                <img src="<%c++ HomePage_tmp_stream << p.at("image_url"); %>" alt="Product" class="max-h-full object-contain transition-transform duration-500 group-hover:scale-110">
                             <%c++ } else { %>
                                 <div class="text-slate-200 text-3xl">📦</div>
                             <%c++ } %>
@@ -110,19 +110,19 @@
                         <div class="px-1 flex-grow flex flex-col gap-1">
                             <p class="text-[9px] font-black text-slate-400 uppercase tracking-tighter leading-none">Smart Device</p>
                             <h3 class="text-[11px] font-bold text-slate-800 line-clamp-2 leading-tight group-hover:text-amber-700 transition">
-                                <a href="/product/<%c++ index_tmp_stream << p.at("id"); %>"><%c++ index_tmp_stream << p.at("title"); %></a>
+                                <a href="/product/<%c++ HomePage_tmp_stream << p.at("id"); %>"><%c++ HomePage_tmp_stream << p.at("title"); %></a>
                             </h3>
-                            <p class="text-[13px] font-black text-slate-900 tracking-tight mt-1"><%c++ index_tmp_stream << p.at("price"); %> so'm</p>
+                            <p class="text-[13px] font-black text-slate-900 tracking-tight mt-1"><%c++ HomePage_tmp_stream << p.at("price"); %> so'm</p>
                         </div>
                         
                         <div class="mt-3 flex gap-1">
                             <form action="/cart/add" method="POST" class="flex-grow">
-                                <input type="hidden" name="csrf_token" value="<%c++ index_tmp_stream << @@.get<std::string>("csrf_token"); %>">
-                                <input type="hidden" name="product_id" value="<%c++ index_tmp_stream << p.at("id"); %>">
+                                <input type="hidden" name="csrf_token" value="<%c++ HomePage_tmp_stream << @@.get<std::string>("csrf_token"); %>">
+                                <input type="hidden" name="product_id" value="<%c++ HomePage_tmp_stream << p.at("id"); %>">
                                 <button class="w-full btn-amber py-2 text-[9px] font-black uppercase tracking-widest">SAVATGA</button>
                             </form>
-                            <form action="/wishlist/add/<%c++ index_tmp_stream << p.at("id"); %>" method="POST" class="relative z-10">
-                                <input type="hidden" name="csrf_token" value="<%c++ index_tmp_stream << @@.get<std::string>("csrf_token"); %>">
+                            <form action="/wishlist/add/<%c++ HomePage_tmp_stream << p.at("id"); %>" method="POST" class="relative z-10">
+                                <input type="hidden" name="csrf_token" value="<%c++ HomePage_tmp_stream << @@.get<std::string>("csrf_token"); %>">
                                 <button type="submit" class="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 hover:text-red-500 transition-colors">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
                                 </button>
@@ -134,11 +134,11 @@
 
             <div class="mt-16 flex justify-center gap-1">
                 <%c++ if (current_page > 1) { %>
-                    <a href="?page=<%c++ index_tmp_stream << (current_page - 1); %>" class="px-4 py-2 bg-white border border-slate-200 rounded text-[10px] font-black uppercase tracking-widest hover:bg-amber-50 transition">←</a>
+                    <a href="?page=<%c++ HomePage_tmp_stream << (current_page - 1); %>" class="px-4 py-2 bg-white border border-slate-200 rounded text-[10px] font-black uppercase tracking-widest hover:bg-amber-50 transition">←</a>
                 <%c++ } %>
-                <span class="px-4 py-2 bg-amber-700 text-white rounded text-[10px] font-black"><%c++ index_tmp_stream << current_page; %></span>
+                <span class="px-4 py-2 bg-amber-700 text-white rounded text-[10px] font-black"><%c++ HomePage_tmp_stream << current_page; %></span>
                 <%c++ if (products.size() == 12) { %>
-                    <a href="?page=<%c++ index_tmp_stream << (current_page + 1); %>" class="px-4 py-2 bg-white border border-slate-200 rounded text-[10px] font-black uppercase tracking-widest hover:bg-amber-50 transition">→</a>
+                    <a href="?page=<%c++ HomePage_tmp_stream << (current_page + 1); %>" class="px-4 py-2 bg-white border border-slate-200 rounded text-[10px] font-black uppercase tracking-widest hover:bg-amber-50 transition">→</a>
                 <%c++ } %>
             </div>
         </section>
