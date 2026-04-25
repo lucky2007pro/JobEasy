@@ -3,8 +3,7 @@ WORKDIR /app
 COPY . .
 RUN cmake -B build . && cmake --build build --config Release
 
-FROM ubuntu:22.04
-RUN apt-get update && apt-get install -y libjsoncpp-dev uuid-dev zlib1g-dev libpq-dev && rm -rf /var/lib/apt/lists/*
+FROM drogonframework/drogon:latest
 WORKDIR /app
 
 # Copy the binary and config
