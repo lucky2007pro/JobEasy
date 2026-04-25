@@ -57,13 +57,18 @@ void AuthController::handleLogin(const HttpRequestPtr& req, std::function<void(c
         [callback, req](const drogon::orm::Result& result) {
             if (result.size() > 0) {
                 // Foydalanuvchi topildi! Session'ga saqlaymiz
-                auto session = req->session();
+                std::string role = result[0]["role"].as<std::string>();
                 session->insert("user_id", result[0]["id"].as<int>());
                 session->insert("user_name", result[0]["full_name"].as<std::string>());
-                session->insert("user_role", result[0]["role"].as<std::string>());
+                session->insert("user_role", role);
 
-                auto resp = HttpResponse::newRedirectionResponse("/");
-                callback(resp);
+                if (role == "admin") {
+                    auto resp = HttpResponse::newRedirectionResponse("/admin/dashboard");
+                    callback(resp);
+                } else {
+                    auto resp = HttpResponse::newRedirectionResponse("/");
+                    callback(resp);
+                }
             }
             else {
                 // Xato ma'lumotlar
