@@ -86,8 +86,8 @@
                     <h2 class="text-xl font-bold text-slate-800 tracking-tight">Mavjud Kategoriyalar</h2>
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tizimdagi barcha bo'limlar</p>
                 </div>
-                <div class="card overflow-hidden">
-                    <table class="w-full text-left">
+                <div class="card overflow-x-auto">
+                    <table class="w-full text-left whitespace-nowrap min-w-[500px]">
                         <thead>
                             <tr>
                                 <th>Kategoriya ID</th>

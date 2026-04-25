@@ -17,7 +17,7 @@
         .field:focus { border-color: #7c3aed; box-shadow: 0 0 0 4px rgba(124,58,237,0.08); }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen pb-20 md:pb-0">
     <%c++
         using WalletItem = std::map<std::string, std::string>;
         auto balance = @@.get<std::string>("balance");
@@ -139,5 +139,28 @@
             </div>
         </div>
     </div>
+    <!-- Mobile Bottom Nav -->
+    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 z-50 px-6 py-3 flex justify-between items-center text-slate-400 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] pb-6 p-safe">
+        <a href="/" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">🏠</span>
+            <span class="text-[8px] font-black uppercase mt-1">Asosiy</span>
+        </a>
+        <a href="/search" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">🔍</span>
+            <span class="text-[8px] font-black uppercase mt-1">Qidiruv</span>
+        </a>
+        <a href="/cart" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">🛒</span>
+            <span class="text-[8px] font-black uppercase mt-1">Savat</span>
+        </a>
+        <a href="/wishlist" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">❤️</span>
+            <span class="text-[8px] font-black uppercase mt-1">Sevimli</span>
+        </a>
+        <a href="/profile" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">👤</span>
+            <span class="text-[8px] font-black uppercase mt-1">Profil</span>
+        </a>
+    </nav>
 </body>
 </html>

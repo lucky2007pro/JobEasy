@@ -19,7 +19,7 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col pb-20 md:pb-0">
     <%c++
         using ProductItem = std::map<std::string, std::string>;
         auto &products = @@.get<std::vector<ProductItem>>("products");
@@ -44,13 +44,13 @@
                 </div>
             </form>
 
-            <div class="flex items-center gap-5 flex-shrink-0">
+            <div class="hidden md:flex items-center gap-5 flex-shrink-0">
                 <a href="/wishlist" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">SEVIMLI</a>
                 <a href="/cart" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">SAVAT</a>
                 <a href="/wallet" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">HAMYON</a>
                 <%c++ if (is_logged_in) { %>
                     <a href="/profile" class="flex items-center gap-2 group">
-                        <div class="text-right hidden sm:block">
+                        <div class="text-right">
                             <p class="text-[9px] font-black text-slate-400 uppercase leading-none mb-0.5">Mening</p>
                             <p class="text-[10px] font-bold text-slate-800 group-hover:text-amber-700 transition leading-none">Profilim</p>
                         </div>
@@ -58,6 +58,15 @@
                     </a>
                 <%c++ } else { %>
                     <a href="/login" class="btn-amber px-4 py-1.5 text-[10px] uppercase tracking-widest">KIRISH</a>
+                <%c++ } %>
+            </div>
+            
+            <div class="flex md:hidden items-center gap-4 flex-shrink-0">
+                <a href="/search" class="text-slate-400 hover:text-amber-700 text-lg transition">🔍</a>
+                <%c++ if (is_logged_in) { %>
+                    <a href="/profile" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-700 border border-slate-200"><%c++ HomePage_tmp_stream << name.substr(0,1); %></a>
+                <%c++ } else { %>
+                    <a href="/login" class="text-[10px] font-black text-amber-700 uppercase tracking-widest bg-amber-50 px-3 py-1.5 rounded-lg">KIRISH</a>
                 <%c++ } %>
             </div>
         </div>
@@ -180,5 +189,28 @@
             <span>POWERED BY DROGON C++</span>
         </div>
     </footer>
+    <!-- Mobile Bottom Nav -->
+    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 z-50 px-6 py-3 flex justify-between items-center text-slate-400 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] pb-6 p-safe">
+        <a href="/" class="flex flex-col items-center hover:text-amber-700 text-amber-700 transition">
+            <span class="text-xl leading-none">🏠</span>
+            <span class="text-[8px] font-black uppercase mt-1">Asosiy</span>
+        </a>
+        <a href="/search" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">🔍</span>
+            <span class="text-[8px] font-black uppercase mt-1">Qidiruv</span>
+        </a>
+        <a href="/cart" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">🛒</span>
+            <span class="text-[8px] font-black uppercase mt-1">Savat</span>
+        </a>
+        <a href="/wishlist" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">❤️</span>
+            <span class="text-[8px] font-black uppercase mt-1">Sevimli</span>
+        </a>
+        <a href="/profile" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">👤</span>
+            <span class="text-[8px] font-black uppercase mt-1">Profil</span>
+        </a>
+    </nav>
 </body>
 </html>

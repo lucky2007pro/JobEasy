@@ -20,7 +20,7 @@
         .order-card { animation: fadeInUp 0.4s ease-out backwards; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col pb-20 md:pb-0">
     <%c++
         using OrderItem = std::map<std::string, std::string>;
         auto &orders = @@.get<std::vector<OrderItem>>("orders");
@@ -34,13 +34,20 @@
                 <div class="w-6 h-6 bg-amber-700 rounded-lg flex items-center justify-center text-white font-black text-[10px]">C</div>
                 <span class="text-base font-bold text-slate-800 tracking-tight">CyberShop</span>
             </a>
-            <div class="flex items-center gap-5">
+            <div class="hidden md:flex items-center gap-5">
                 <a href="/" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">DO'KON</a>
                 <a href="/cart" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">SAVAT</a>
                 <a href="/wallet" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">HAMYON</a>
-                <div class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-[9px] font-black text-slate-600 border border-slate-200">
+                <a href="/profile" class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-[9px] font-black text-slate-600 border border-slate-200">
                     <%c++ Orders_tmp_stream << (name.empty() ? "?" : name.substr(0,1)); %>
-                </div>
+                </a>
+            </div>
+            
+            <div class="flex md:hidden items-center gap-4 flex-shrink-0">
+                <a href="/search" class="text-slate-400 hover:text-amber-700 text-lg transition">🔍</a>
+                <a href="/profile" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-700 border border-slate-200">
+                    <%c++ Orders_tmp_stream << (name.empty() ? "?" : name.substr(0,1)); %>
+                </a>
             </div>
         </div>
     </header>
@@ -129,5 +136,28 @@
     <footer class="mt-auto py-8 text-center bg-white border-t border-slate-100">
         <p class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">© 2026 CYBERSHOP &middot; ORDER HISTORY</p>
     </footer>
+    <!-- Mobile Bottom Nav -->
+    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 z-50 px-6 py-3 flex justify-between items-center text-slate-400 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] pb-6 p-safe">
+        <a href="/" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">🏠</span>
+            <span class="text-[8px] font-black uppercase mt-1">Asosiy</span>
+        </a>
+        <a href="/search" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">🔍</span>
+            <span class="text-[8px] font-black uppercase mt-1">Qidiruv</span>
+        </a>
+        <a href="/cart" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">🛒</span>
+            <span class="text-[8px] font-black uppercase mt-1">Savat</span>
+        </a>
+        <a href="/wishlist" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">❤️</span>
+            <span class="text-[8px] font-black uppercase mt-1">Sevimli</span>
+        </a>
+        <a href="/profile" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">👤</span>
+            <span class="text-[8px] font-black uppercase mt-1">Profil</span>
+        </a>
+    </nav>
 </body>
 </html>

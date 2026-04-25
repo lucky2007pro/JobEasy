@@ -17,7 +17,7 @@
         .search-input:focus { background: #ffffff; border-color: #b45309; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col pb-20 md:pb-0">
     <%c++
         auto is_logged_in = @@.get<bool>("is_logged_in");
         auto &name = @@.get<std::string>("user_name");
@@ -45,7 +45,7 @@
                 </div>
             </form>
 
-            <div class="flex items-center gap-6 flex-shrink-0">
+            <div class="hidden md:flex items-center gap-6 flex-shrink-0">
                 <a href="/wishlist" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">SEVIMLI</a>
                 <a href="/cart" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">SAVAT</a>
                 <%c++ if (is_logged_in) { %>
@@ -53,6 +53,10 @@
                 <%c++ } else { %>
                     <a href="/login" class="text-[10px] font-black text-amber-700 uppercase tracking-widest bg-amber-50 px-3 py-1.5 rounded">KIRISH</a>
                 <%c++ } %>
+            </div>
+            
+            <div class="flex md:hidden items-center gap-4 flex-shrink-0">
+                <a href="/cart" class="text-slate-400 hover:text-amber-700 text-lg transition">🛒</a>
             </div>
         </div>
     </header>
@@ -105,5 +109,28 @@
     <footer class="mt-auto py-10 px-6 border-t border-slate-200 text-center">
         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">&copy; 2026 CyberShop &middot; Biz bilan kelajak yaqin</p>
     </footer>
+    <!-- Mobile Bottom Nav -->
+    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 z-50 px-6 py-3 flex justify-between items-center text-slate-400 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] pb-6 p-safe">
+        <a href="/" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">🏠</span>
+            <span class="text-[8px] font-black uppercase mt-1">Asosiy</span>
+        </a>
+        <a href="/search" class="flex flex-col items-center hover:text-amber-700 text-amber-700 transition">
+            <span class="text-xl leading-none">🔍</span>
+            <span class="text-[8px] font-black uppercase mt-1">Qidiruv</span>
+        </a>
+        <a href="/cart" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">🛒</span>
+            <span class="text-[8px] font-black uppercase mt-1">Savat</span>
+        </a>
+        <a href="/wishlist" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">❤️</span>
+            <span class="text-[8px] font-black uppercase mt-1">Sevimli</span>
+        </a>
+        <a href="/profile" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">👤</span>
+            <span class="text-[8px] font-black uppercase mt-1">Profil</span>
+        </a>
+    </nav>
 </body>
 </html>

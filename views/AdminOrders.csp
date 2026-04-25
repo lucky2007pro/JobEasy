@@ -70,8 +70,8 @@
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tranzaksiyalar va yetkazib berish nazorati</p>
             </div>
 
-            <div class="card overflow-hidden">
-                <table class="w-full text-left">
+            <div class="card overflow-x-auto">
+                <table class="w-full text-left whitespace-nowrap min-w-[700px]">
                     <thead>
                         <tr>
                             <th>Mijoz</th>

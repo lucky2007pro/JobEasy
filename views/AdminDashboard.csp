@@ -78,11 +78,11 @@
                 </a>
             </div>
 
-            <div class="card overflow-hidden">
-                <table class="w-full text-left">
+            <div class="card overflow-x-auto">
+                <table class="w-full text-left whitespace-nowrap min-w-[700px]">
                     <thead>
                         <tr>
-                            <th>Mahsulot</th>
+                            <th class="px-6 py-3">Mahsulot</th>
                             <th>Narxi</th>
                             <th>Zaxira</th>
                             <th class="text-right">Amallar</th>

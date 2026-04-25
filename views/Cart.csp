@@ -16,7 +16,7 @@
         .item-row:hover { background: #f8fafc; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col pb-20 md:pb-0">
     <%c++
         using CartItem = std::map<std::string, std::string>;
         auto &items = @@.get<std::vector<CartItem>>("cart_items");
@@ -31,12 +31,18 @@
                 <div class="w-6 h-6 bg-amber-700 rounded-lg flex items-center justify-center text-white font-black text-[10px]">C</div>
                 <span class="text-base font-bold text-slate-800 tracking-tight">CyberShop</span>
             </a>
-            <div class="flex items-center gap-5">
+            <div class="hidden md:flex items-center gap-5">
                 <a href="/" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">DO'KON</a>
                 <a href="/wishlist" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">SEVIMLI</a>
-                <div class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-[9px] font-black text-slate-600 border border-slate-200">
+                <a href="/profile" class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-[9px] font-black text-slate-600 border border-slate-200 hover:border-amber-500 transition">
                     <%c++ Cart_tmp_stream << (name.empty() ? "?" : name.substr(0,1)); %>
-                </div>
+                </a>
+            </div>
+            <div class="flex md:hidden items-center gap-4 flex-shrink-0">
+                <a href="/search" class="text-slate-400 hover:text-amber-700 text-lg transition">🔍</a>
+                <a href="/profile" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-700 border border-slate-200">
+                    <%c++ Cart_tmp_stream << (name.empty() ? "?" : name.substr(0,1)); %>
+                </a>
             </div>
         </div>
     </header>
@@ -64,8 +70,8 @@
                         </div>
                         <div class="divide-y divide-slate-50">
                             <%c++ for(auto &item : items) { %>
-                                <div class="item-row p-5 flex items-center justify-between gap-4">
-                                    <div class="flex items-center gap-4 flex-grow">
+                                <div class="item-row p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                    <div class="flex items-center gap-4 w-full sm:w-auto flex-grow">
                                         <div class="w-14 h-14 bg-white rounded border border-slate-100 flex items-center justify-center p-2 shrink-0">
                                             <%c++ if (!item.at("image_url").empty()) { %>
                                                 <img src="<%c++ Cart_tmp_stream << item.at("image_url"); %>" class="max-h-full object-contain">
@@ -76,14 +82,15 @@
                                             <p class="text-[10px] font-black text-amber-700 mt-0.5"><%c++ Cart_tmp_stream << item.at("price"); %> so'm <span class="text-slate-300 mx-1">×</span> <%c++ Cart_tmp_stream << item.at("quantity"); %></p>
                                         </div>
                                     </div>
-                                    <div class="flex items-center gap-6 shrink-0">
-                                        <div class="text-right">
+                                    <div class="flex items-center justify-between sm:justify-end gap-6 w-full sm:w-auto shrink-0 mt-2 sm:mt-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-50">
+                                        <div class="text-left sm:text-right">
+                                            <p class="text-[9px] font-black text-slate-400 sm:hidden mb-0.5">YIG'INDISI</p>
                                             <p class="text-xs font-black text-slate-900"><%c++ Cart_tmp_stream << item.at("subtotal"); %> so'm</p>
                                         </div>
                                         <form action="/cart/remove/<%c++ Cart_tmp_stream << item.at("cart_id"); %>" method="POST">
                                             <input type="hidden" name="csrf_token" value="<%c++ Cart_tmp_stream << @@.get<std::string>("csrf_token"); %>">
-                                            <button class="w-7 h-7 flex items-center justify-center text-slate-200 hover:text-red-500 hover:bg-red-50 rounded transition-all">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                                            <button class="w-8 h-8 flex items-center justify-center text-slate-400 bg-slate-50 sm:bg-transparent sm:text-slate-200 hover:text-red-500 hover:bg-red-50 rounded transition-all">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-3.5 sm:w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
                                             </button>
                                         </form>
                                     </div>
@@ -127,5 +134,28 @@
     <footer class="mt-auto py-8 text-center bg-white border-t border-slate-100">
         <p class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">© 2026 CYBERSHOP &middot; DROGON BACKEND</p>
     </footer>
+    <!-- Mobile Bottom Nav -->
+    <nav class="md:hidden fixed bottom-0 left-0 w-full bg-white border-t border-slate-200 z-50 px-6 py-3 flex justify-between items-center text-slate-400 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] pb-6 p-safe">
+        <a href="/" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">🏠</span>
+            <span class="text-[8px] font-black uppercase mt-1">Asosiy</span>
+        </a>
+        <a href="/search" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">🔍</span>
+            <span class="text-[8px] font-black uppercase mt-1">Qidiruv</span>
+        </a>
+        <a href="/cart" class="flex flex-col items-center hover:text-amber-700 text-amber-700 transition">
+            <span class="text-xl leading-none">🛒</span>
+            <span class="text-[8px] font-black uppercase mt-1">Savat</span>
+        </a>
+        <a href="/wishlist" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">❤️</span>
+            <span class="text-[8px] font-black uppercase mt-1">Sevimli</span>
+        </a>
+        <a href="/profile" class="flex flex-col items-center hover:text-amber-700 transition">
+            <span class="text-xl leading-none">👤</span>
+            <span class="text-[8px] font-black uppercase mt-1">Profil</span>
+        </a>
+    </nav>
 </body>
 </html>
