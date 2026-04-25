@@ -4,4 +4,10 @@
 
 using namespace drogon;
 
-// Drogon 1.9+ does not require explicit filter registration macros here.
+namespace {
+    // Explicitly instantiate to force registration with the framework
+    static const auto _admin_filter = AdminFilter();
+    static const auto _login_filter = LoginFilter();
+}
+
+// Drogon 1.9+ might require explicit instantiation if filters are header-only
