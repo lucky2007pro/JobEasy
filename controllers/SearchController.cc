@@ -55,27 +55,28 @@ void SearchController::search(const HttpRequestPtr& req, std::function<void(cons
         "FROM products WHERE is_active = TRUE";
 
     try {
-        Result result;
-        if (!query.empty() && hasCategory)
-        {
-            result = db->execSqlSync(baseSql + " AND (title ILIKE $1 OR description ILIKE $1) AND category_id = $2 ORDER BY id DESC",
-                                     "%" + query + "%",
-                                     categoryId);
-        }
-        else if (!query.empty())
-        {
-            result = db->execSqlSync(baseSql + " AND (title ILIKE $1 OR description ILIKE $1) ORDER BY id DESC",
-                                     "%" + query + "%");
-        }
-        else if (hasCategory)
-        {
-            result = db->execSqlSync(baseSql + " AND category_id = $1 ORDER BY id DESC",
-                                     categoryId);
-        }
-        else
-        {
-            result = db->execSqlSync(baseSql + " ORDER BY id DESC");
-        }
+        Result result = [&]() {
+            if (!query.empty() && hasCategory)
+            {
+                return db->execSqlSync(baseSql + " AND (title ILIKE $1 OR description ILIKE $1) AND category_id = $2 ORDER BY id DESC",
+                                         "%" + query + "%",
+                                         categoryId);
+            }
+            else if (!query.empty())
+            {
+                return db->execSqlSync(baseSql + " AND (title ILIKE $1 OR description ILIKE $1) ORDER BY id DESC",
+                                         "%" + query + "%");
+            }
+            else if (hasCategory)
+            {
+                return db->execSqlSync(baseSql + " AND category_id = $1 ORDER BY id DESC",
+                                         categoryId);
+            }
+            else
+            {
+                return db->execSqlSync(baseSql + " ORDER BY id DESC");
+            }
+        }();
 
         HttpViewData data;
         data.insert("user_name", userName);
