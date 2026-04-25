@@ -9,6 +9,9 @@ services:
     depends_on:
       - db
     restart: always
+    volumes:
+      - ./config.prod.json:/app/config.json
+      - ./uploads:/app/uploads
 
   db:
     image: postgres:15

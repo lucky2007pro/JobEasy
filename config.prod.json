@@ -1,0 +1,74 @@
+{
+  "db_clients": [
+    {
+      "name": "default",
+      "rdbms": "postgresql",
+      "host": "db",
+      "port": 5432,
+      "dbname": "jobeasy_db",
+      "user": "postgres",
+      "password": "hojiakbar",
+      "is_fast": false,
+      "number_of_connections": 5,
+      "timeout": -1.0,
+      "auto_batch": false
+    }
+  ],
+  "listeners": [
+    {
+      "address": "0.0.0.0",
+      "port": 8848
+    }
+  ],
+  "app": {
+    "number_of_threads": 0,
+    "enable_session": true,
+    "session_timeout": 86400,
+    "session_cookie_name": "JOBEASY_SESSION",
+    "document_root": "./",
+    "home_page": "index.html",
+    "use_implicit_page": true,
+    "implicit_page": "index.html",
+    "upload_path": "uploads",
+    "file_types": [
+      "gif",
+      "png",
+      "jpg",
+      "js",
+      "css",
+      "html",
+      "ico",
+      "xml",
+      "svg",
+      "webp"
+    ],
+    "locations": [],
+    "max_connections": 100000,
+    "max_connections_per_ip": 0,
+    "load_dynamic_views": false,
+    "dynamic_views_path": [
+      "./views"
+    ],
+    "log": {
+      "use_spdlog": false,
+      "log_path": "",
+      "logfile_base_name": "",
+      "log_size_limit": 100000000,
+      "max_files": 0,
+      "log_level": "INFO",
+      "display_local_time": true
+    },
+    "run_as_daemon": false,
+    "handle_sig_term": true,
+    "relaunch_on_error": false,
+    "use_sendfile": true,
+    "use_gzip": true,
+    "use_brotli": false,
+    "client_max_body_size": "1M",
+    "client_max_memory_body_size": "64K",
+    "client_max_websocket_message_size": "128K",
+    "reuse_port": false
+  },
+  "plugins": [],
+  "custom_config": {}
+}
