@@ -53,6 +53,9 @@ int main() {
         LOG_INFO << "JobEasy Server ishga tushmoqda...";
 
         // 4. Serverni yurgizish
+        // 3.5 Custom 404 sahifani sozlash
+        drogon::app().setCustom404Page(drogon::HttpResponse::newHttpViewResponse("NotFound"));
+
         drogon::app().run();
     }
     catch (const std::exception& e) {
