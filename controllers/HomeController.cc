@@ -89,7 +89,7 @@ void HomeController::index(const HttpRequestPtr& req, std::function<void (const 
                     }
                     data.insert("categories", categories);
 
-                    auto resp = HttpResponse::newHttpViewResponse("index", data);
+                    auto resp = HttpResponse::newHttpViewResponse("HomePage", data);
                     callback(resp);
                 },
                 [callback](const drogon::orm::DrogonDbException& e) {
