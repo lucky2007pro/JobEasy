@@ -115,10 +115,7 @@
                             </div>
                         </div>
                         
-                        <form action="/checkout" method="POST" class="mt-8">
-                            <input type="hidden" name="csrf_token" value="<%c++ Cart_tmp_stream << @@.get<std::string>("csrf_token"); %>">
-                            <button class="w-full btn-amber py-3.5 text-[10px] uppercase tracking-widest shadow-xl shadow-amber-900/40">TO'LOVGA O'TISH</button>
-                        </form>
+                        <a href="/checkout" class="block w-full btn-amber py-3.5 text-[10px] uppercase tracking-widest shadow-xl shadow-amber-900/40 mt-8 text-center">TO'LOVGA O'TISH</a>
                         
                         <p class="text-center text-[8px] font-black text-slate-600 uppercase tracking-widest mt-6">🔒 256-BIT SSL XAVFSIZ TO'LOV</p>
                     </div>

@@ -39,7 +39,10 @@ void AdminController::dashboard(const HttpRequestPtr& req, std::function<void(co
     auto dbClient = drogon::app().getDbClient("default");
 
     dbClient->execSqlAsync(
-        "SELECT id, title, price, stock, image_url FROM products ORDER BY id DESC",
+        "SELECT p.id, p.title, p.price, p.stock, pi.image_url "
+        "FROM products p "
+        "LEFT JOIN product_images pi ON (p.id = pi.product_id AND pi.is_primary = TRUE) "
+        "ORDER BY p.id DESC",
         [callback, req](const drogon::orm::Result& r) {
             HttpViewData data;
             std::vector<std::map<std::string, std::string>> products_list;

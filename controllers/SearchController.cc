@@ -88,10 +88,10 @@ void SearchController::search(const HttpRequestPtr& req, std::function<void(cons
             p["id"] = row["id"].as<std::string>();
             p["title"] = row["title"].as<std::string>();
             p["price"] = row["price"].as<std::string>();
-            p["image_url"] = row["image_url"].as<std::string>();
-            p["description"] = row["description"].as<std::string>();
-            p["stock"] = row["stock"].as<std::string>();
-            p["discount_percentage"] = row["discount_percentage"].as<std::string>();
+            p["image_url"] = row["image_url"].isNull() ? "" : row["image_url"].as<std::string>();
+            p["description"] = row["description"].isNull() ? "" : row["description"].as<std::string>();
+            p["stock"] = row["stock"].isNull() ? "0" : row["stock"].as<std::string>();
+            p["discount_percentage"] = row["discount_percentage"].isNull() ? "0" : row["discount_percentage"].as<std::string>();
             products.push_back(p);
         }
 

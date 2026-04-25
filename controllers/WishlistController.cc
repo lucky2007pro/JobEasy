@@ -55,7 +55,7 @@ void WishlistController::viewWishlist(const HttpRequestPtr& req, std::function<v
                 item["id"] = row["id"].as<std::string>();
                 item["title"] = row["title"].as<std::string>();
                 item["price"] = row["price"].as<std::string>();
-                item["image_url"] = row["image_url"].as<std::string>();
+                item["image_url"] = row["image_url"].isNull() ? "" : row["image_url"].as<std::string>();
                 items.push_back(item);
             }
             data.insert("wishlist_items", items);

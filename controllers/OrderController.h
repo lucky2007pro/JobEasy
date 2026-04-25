@@ -11,10 +11,11 @@ public:
         ADD_METHOD_TO(OrderController::checkoutPage, "/checkout", Get, "LoginFilter");
         ADD_METHOD_TO(OrderController::processCheckout, "/checkout", Post, "LoginFilter");
         ADD_METHOD_TO(OrderController::myOrders, "/orders", Get, "LoginFilter");
+        ADD_METHOD_TO(OrderController::cancelOrder, "/orders/cancel/{id}", Post, "LoginFilter");
     METHOD_LIST_END
 
-    void checkout(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback);
     void checkoutPage(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback);
     void processCheckout(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback);
     void myOrders(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback);
+    void cancelOrder(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback, int orderId);
 };

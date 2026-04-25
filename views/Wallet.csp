@@ -109,16 +109,27 @@
                             <div class="rounded-2xl border border-dashed border-slate-200 p-6 text-center soft">Hozircha o'tkazmalar mavjud emas</div>
                         <%c++ } else { %>
                             <%c++ for (auto &tx : transactions) { %>
-                                <div class="rounded-2xl border border-slate-200 px-4 py-4 flex items-center justify-between gap-4">
-                                    <div>
-                                        <p class="font-bold text-slate-800"><%c++ Wallet_tmp_stream << tx.at("description"); %></p>
-                                        <p class="text-xs soft mt-1"><%c++ Wallet_tmp_stream << tx.at("created_at"); %></p>
+                                <div class="rounded-2xl border border-slate-200 px-4 py-4 flex items-center justify-between gap-4 hover:border-slate-300 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <%c++ if (tx.at("type") == "top-up") { %>
+                                            <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-500 text-lg font-black shrink-0">↑</div>
+                                        <%c++ } else if (tx.at("type") == "refund") { %>
+                                            <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500 text-lg font-black shrink-0">↩</div>
+                                        <%c++ } else { %>
+                                            <div class="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-500 text-lg font-black shrink-0">↓</div>
+                                        <%c++ } %>
+                                        <div>
+                                            <p class="font-bold text-slate-800 text-sm"><%c++ Wallet_tmp_stream << tx.at("description"); %></p>
+                                            <p class="text-xs soft mt-0.5"><%c++ Wallet_tmp_stream << tx.at("created_at"); %></p>
+                                        </div>
                                     </div>
-                                    <div class="text-right">
-                                        <p class="font-black <%c++ Wallet_tmp_stream << (tx.at("type") == "top-up" ? "text-emerald-600" : "text-slate-800"); %>">
-                                            <%c++ Wallet_tmp_stream << (tx.at("type") == "top-up" ? "+" : "-"); %><%c++ Wallet_tmp_stream << tx.at("amount"); %> so'm
+                                    <div class="text-right shrink-0">
+                                        <p class="font-black text-base <%c++ Wallet_tmp_stream << (tx.at("type") == "payment" ? "text-red-500" : (tx.at("type") == "refund" ? "text-blue-600" : "text-emerald-600")); %>">
+                                            <%c++ Wallet_tmp_stream << (tx.at("type") == "top-up" || tx.at("type") == "refund" ? "+" : "-"); %><%c++ Wallet_tmp_stream << tx.at("amount"); %> so'm
                                         </p>
-                                        <p class="text-xs uppercase tracking-widest soft mt-1"><%c++ Wallet_tmp_stream << tx.at("status"); %></p>
+                                        <p class="text-[9px] uppercase tracking-widest font-bold mt-0.5 <%c++ Wallet_tmp_stream << (tx.at("type") == "payment" ? "text-red-400" : (tx.at("type") == "refund" ? "text-blue-400" : "text-emerald-400")); %>">
+                                            <%c++ Wallet_tmp_stream << (tx.at("type") == "top-up" ? "TO'LDIRILDI" : (tx.at("type") == "refund" ? "QAYTARILDI" : "SARFLANDI")); %>
+                                        </p>
                                     </div>
                                 </div>
                             <%c++ } %>

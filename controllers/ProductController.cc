@@ -95,8 +95,8 @@ void ProductController::showProduct(const HttpRequestPtr& request, std::function
 
                             auto session = request->session();
                             data.insert("is_logged_in", session->find("user_id"));
-                            data.insert("user_name", session->get<std::string>("user_name"));
-                            data.insert("csrf_token", session->get<std::string>("csrf_token"));
+                            data.insert("user_name", session->find("user_name") ? session->get<std::string>("user_name") : std::string("Mehmon"));
+                            data.insert("csrf_token", session->find("csrf_token") ? session->get<std::string>("csrf_token") : std::string(""));
 
                             auto resp = HttpResponse::newHttpViewResponse("ProductDetail", data);
                             callback(resp);

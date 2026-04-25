@@ -5,14 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CyberShop | Buyurtmalar</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style> 
         body { font-family: 'Outfit', sans-serif; background-color: #f8fafc; color: #1e293b; }
         .glass-header { background: rgba(255, 255, 255, 0.82); backdrop-filter: blur(16px); border-bottom: 1px solid #e2e8f0; }
-        .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; }
+        .card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; transition: all 0.25s; }
+        .card:hover { border-color: #e2d5c0; box-shadow: 0 8px 30px rgba(180, 83, 9, 0.06); }
         .btn-amber { background: #b45309; color: white; border-radius: 6px; font-weight: 700; transition: all 0.2s; }
         .btn-amber:hover { background: #92400e; }
-        .status-badge { font-size: 8px; font-weight: 800; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.1em; }
+        .btn-cancel { background: #fff; color: #dc2626; border: 1.5px solid #fecaca; border-radius: 8px; font-weight: 700; transition: all 0.2s; cursor: pointer; }
+        .btn-cancel:hover { background: #fef2f2; border-color: #dc2626; }
+        .status-badge { font-size: 9px; font-weight: 800; padding: 3px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.12em; display: inline-flex; align-items: center; gap: 4px; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+        .order-card { animation: fadeInUp 0.4s ease-out backwards; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -20,6 +25,7 @@
         using OrderItem = std::map<std::string, std::string>;
         auto &orders = @@.get<std::vector<OrderItem>>("orders");
         auto &name = @@.get<std::string>("user_name");
+        auto csrf = @@.get<std::string>("csrf_token");
     %>
     
     <header class="glass-header sticky top-0 z-50">
@@ -31,6 +37,7 @@
             <div class="flex items-center gap-5">
                 <a href="/" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">DO'KON</a>
                 <a href="/cart" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">SAVAT</a>
+                <a href="/wallet" class="text-[10px] font-black text-slate-400 hover:text-amber-700 uppercase tracking-widest">HAMYON</a>
                 <div class="w-7 h-7 rounded-full bg-slate-100 flex items-center justify-center text-[9px] font-black text-slate-600 border border-slate-200">
                     <%c++ Orders_tmp_stream << (name.empty() ? "?" : name.substr(0,1)); %>
                 </div>
@@ -39,30 +46,47 @@
     </header>
 
     <main class="flex-grow max-w-4xl mx-auto px-4 md:px-8 py-10 w-full space-y-8">
-        <div class="space-y-1">
-            <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Buyurtmalar Tarixi</h1>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Barcha xaridlar ro'yxati</p>
+        <div class="flex items-center justify-between">
+            <div class="space-y-1">
+                <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Buyurtmalar Tarixi</h1>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Barcha xaridlar ro'yxati</p>
+            </div>
+            <a href="/" class="btn-amber px-5 py-2 text-[10px] uppercase tracking-widest shadow-lg shadow-amber-900/10">+ Yangi xarid</a>
         </div>
         
         <%c++ if (orders.empty()) { %>
             <div class="card p-16 text-center space-y-4 border-dashed bg-slate-50/20">
-                <div class="text-3xl opacity-20">📦</div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hali buyurtmalar mavjud emas</p>
+                <div class="w-16 h-16 mx-auto rounded-2xl bg-slate-50 flex items-center justify-center">
+                    <span class="text-3xl opacity-40">📦</span>
+                </div>
+                <h2 class="text-lg font-bold text-slate-800">Hali buyurtmalar mavjud emas</h2>
+                <p class="text-xs text-slate-400 font-medium max-w-xs mx-auto">Birinchi buyurtmangizni berish uchun do'kon bo'limiga o'ting.</p>
                 <a href="/" class="inline-block btn-amber px-8 py-2.5 text-[10px] uppercase tracking-widest shadow-xl shadow-amber-900/10">XARIDNI BOSHLASH</a>
             </div>
         <%c++ } else { %>
             <div class="space-y-4">
-                <%c++ for(auto &order : orders) { %>
-                    <div class="card p-5 group transition-all hover:border-amber-200 flex flex-col md:flex-row gap-5 items-start md:items-center">
+                <%c++ int orderIdx = 0; for(auto &order : orders) { %>
+                    <div class="order-card card p-5 flex flex-col md:flex-row gap-5 items-start md:items-center" style="animation-delay: <%c++ Orders_tmp_stream << (orderIdx * 80); %>ms">
                         <div class="flex-grow space-y-3 w-full">
-                            <div class="flex items-center justify-between md:justify-start gap-4">
-                                <span class="text-[9px] font-black text-slate-500 bg-slate-100 px-2.5 py-1 rounded-sm tracking-tighter">ORD-<%c++ Orders_tmp_stream << order.at("id"); %></span>
+                            <div class="flex items-center flex-wrap gap-3">
+                                <span class="text-[9px] font-black text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md tracking-tighter">ORD-<%c++ Orders_tmp_stream << order.at("id"); %></span>
                                 <%c++ if (order.at("status") == "Pending") { %>
-                                    <span class="status-badge bg-amber-50 text-amber-600 border border-amber-100">KUTILMOQDA</span>
+                                    <span class="status-badge bg-amber-50 text-amber-600 border border-amber-200">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                        KUTILMOQDA
+                                    </span>
                                 <%c++ } else if (order.at("status") == "Completed") { %>
-                                    <span class="status-badge bg-emerald-50 text-emerald-600 border border-emerald-100">YETKAZILDI</span>
+                                    <span class="status-badge bg-emerald-50 text-emerald-600 border border-emerald-200">
+                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+                                        YETKAZILDI
+                                    </span>
+                                <%c++ } else if (order.at("status") == "Cancelled") { %>
+                                    <span class="status-badge bg-red-50 text-red-500 border border-red-200">
+                                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        BEKOR QILINGAN
+                                    </span>
                                 <%c++ } else { %>
-                                    <span class="status-badge bg-slate-50 text-slate-500 border border-slate-100"><%c++ Orders_tmp_stream << order.at("status"); %></span>
+                                    <span class="status-badge bg-slate-50 text-slate-500 border border-slate-200"><%c++ Orders_tmp_stream << order.at("status"); %></span>
                                 <%c++ } %>
                             </div>
                             
@@ -77,17 +101,27 @@
                                 </div>
                                 <div class="space-y-0.5">
                                     <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest opacity-70">Usuli</p>
-                                    <p class="text-[10px] font-bold text-slate-600">Online</p>
+                                    <p class="text-[10px] font-bold text-slate-600">Hamyon</p>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="md:w-32 w-full text-center md:border-l border-slate-50 md:pl-5 shrink-0">
-                            <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest opacity-70 mb-1">Summa</p>
-                            <p class="text-xl font-black text-slate-900 tracking-tighter"><%c++ Orders_tmp_stream << order.at("final_total"); %> so'm</p>
+                        <div class="md:w-40 w-full text-center md:border-l border-slate-50 md:pl-5 shrink-0 space-y-3">
+                            <div>
+                                <p class="text-[8px] font-black text-slate-400 uppercase tracking-widest opacity-70 mb-1">Summa</p>
+                                <p class="text-xl font-black text-slate-900 tracking-tighter"><%c++ Orders_tmp_stream << order.at("final_total"); %> <span class="text-[10px] font-bold text-slate-400">so'm</span></p>
+                            </div>
+                            <%c++ if (order.at("status") == "Pending") { %>
+                                <form action="/orders/cancel/<%c++ Orders_tmp_stream << order.at("id"); %>" method="POST" onsubmit="return confirm('Buyurtmani bekor qilmoqchimisiz? Mablag\047 hamyoningizga qaytariladi.')">
+                                    <input type="hidden" name="csrf_token" value="<%c++ Orders_tmp_stream << csrf; %>">
+                                    <button type="submit" class="btn-cancel w-full py-2 text-[9px] uppercase tracking-widest">
+                                        ✕ Bekor qilish
+                                    </button>
+                                </form>
+                            <%c++ } %>
                         </div>
                     </div>
-                <%c++ } %>
+                <%c++ ++orderIdx; } %>
             </div>
         <%c++ } %>
     </main>

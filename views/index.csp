@@ -63,7 +63,7 @@
         </div>
 
         <div class="max-w-7xl mx-auto px-4 md:px-8 py-2 pb-3 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-slate-50">
-            <a href="/" class="category-pill <%= current_page == 1 ? "active" : "" %>">HAMMASI</a>
+            <a href="/" class="category-pill <%= current_page == 1 ? "active" : "" %>HAMMASI</a>
             <%c++ for(auto &cat : categories) { %>
                 <a href="/search?category_id=<%c++ index_tmp_stream << cat.at("id"); %>" class="category-pill">
                     <%c++ index_tmp_stream << cat.at("name"); %>
