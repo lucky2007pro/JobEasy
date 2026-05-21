@@ -16,7 +16,10 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
-    <%c++ auto csrf = @@.get<std::string>("csrf_token"); %>
+    <%c++
+        auto csrf = @@.get<std::string>("csrf_token");
+        auto errorMsg = @@.get<std::string>("error_msg");
+    %>
     <div class="flex-grow flex flex-col items-center justify-center p-6 bg-slate-50/50">
         <a href="/" class="flex items-center gap-2 mb-10 group">
             <div class="w-7 h-7 bg-amber-700 rounded-lg flex items-center justify-center text-white font-black text-[11px] shadow-lg shadow-amber-900/20 group-hover:scale-110 transition duration-300">C</div>
@@ -30,6 +33,12 @@
                 <h1 class="text-xl font-bold text-slate-800 tracking-tight">Hisob Yaratish</h1>
                 <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">CyberShop oilasiga qo'shiling</p>
             </div>
+
+            <%c++ if (!errorMsg.empty()) { %>
+            <div class="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg flex items-center gap-2">
+                <span>⚠</span> <%c++ Register_tmp_stream << errorMsg; %>
+            </div>
+            <%c++ } %>
 
             <form action="/register" method="POST" class="space-y-4">
                 <input type="hidden" name="csrf_token" value="<%c++ Register_tmp_stream << csrf; %>">

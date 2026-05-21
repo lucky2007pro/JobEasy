@@ -32,14 +32,18 @@ bool validateCsrfToken(const HttpRequestPtr &req)
 void AuthController::loginForm(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
     HttpViewData data;
     data.insert("csrf_token", ensureCsrfToken(req));
+    data.insert("error_msg", std::string(""));
     auto resp = HttpResponse::newHttpViewResponse("Login", data);
     callback(resp);
 }
 
 void AuthController::handleLogin(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
     if (!validateCsrfToken(req)) {
-        auto resp = HttpResponse::newHttpResponse();
-        resp->setStatusCode(k403Forbidden);
+        // CSRF xato — 403 o'rniga login sahifasiga xato xabari bilan qaytaramiz
+        HttpViewData data;
+        data.insert("csrf_token", ensureCsrfToken(req));
+        data.insert("error_msg", std::string("Sessiya muddati tugagan. Sahifani yangilab qayta urinib ko'ring."));
+        auto resp = HttpResponse::newHttpViewResponse("Login", data);
         callback(resp);
         return;
     }
@@ -72,16 +76,20 @@ void AuthController::handleLogin(const HttpRequestPtr& req, std::function<void(c
                 }
             }
             else {
-                // Xato ma'lumotlar
+                // Xato ma'lumotlar — foydalanuvchiga xabar ko'rsatamiz
                 HttpViewData data;
                 data.insert("csrf_token", ensureCsrfToken(req));
+                data.insert("error_msg", std::string("Noto'g'ri email yoki parol."));
                 auto resp = HttpResponse::newHttpViewResponse("Login", data);
-                // Bu yerda xatolik xabarini yuborish mumkin
                 callback(resp);
             }
         },
-        [callback](const drogon::orm::DrogonDbException& e) {
-            callback(HttpResponse::newHttpJsonResponse(Json::Value(e.base().what())));
+        [callback, req](const drogon::orm::DrogonDbException& e) {
+            HttpViewData data;
+            data.insert("csrf_token", ensureCsrfToken(req));
+            data.insert("error_msg", std::string("Server xatosi yuz berdi. Qayta urinib ko'ring."));
+            auto resp = HttpResponse::newHttpViewResponse("Login", data);
+            callback(resp);
         },
         email, hashed_pw
     );
@@ -99,6 +107,7 @@ void AuthController::logout(const HttpRequestPtr& req, std::function<void(const 
 void AuthController::registerForm(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
     HttpViewData data;
     data.insert("csrf_token", ensureCsrfToken(req));
+    data.insert("error_msg", std::string(""));
     auto resp = HttpResponse::newHttpViewResponse("Register", data);
     callback(resp);
 }
@@ -106,8 +115,11 @@ void AuthController::registerForm(const HttpRequestPtr& req, std::function<void(
 // Ma'lumotni bazaga saqlash
 void AuthController::handleRegister(const HttpRequestPtr& req, std::function<void(const HttpResponsePtr&)>&& callback) {
     if (!validateCsrfToken(req)) {
-        auto resp = HttpResponse::newHttpResponse();
-        resp->setStatusCode(k403Forbidden);
+        // CSRF xato — 403 o'rniga register sahifasiga xato xabari bilan qaytaramiz
+        HttpViewData data;
+        data.insert("csrf_token", ensureCsrfToken(req));
+        data.insert("error_msg", std::string("Sessiya muddati tugagan. Sahifani yangilab qayta urinib ko'ring."));
+        auto resp = HttpResponse::newHttpViewResponse("Register", data);
         callback(resp);
         return;
     }
@@ -129,11 +141,13 @@ void AuthController::handleRegister(const HttpRequestPtr& req, std::function<voi
             auto resp = HttpResponse::newRedirectionResponse("/login");
             callback(resp);
         },
-        [callback](const drogon::orm::DrogonDbException& e) {
+        [callback, req](const drogon::orm::DrogonDbException& e) {
             // Agar email band bo'lsa yoki boshqa xato bo'lsa
-            Json::Value ret;
-            ret["error"] = "Xatolik: Email band bo'lishi mumkin.";
-            callback(HttpResponse::newHttpJsonResponse(ret));
+            HttpViewData data;
+            data.insert("csrf_token", ensureCsrfToken(req));
+            data.insert("error_msg", std::string("Xatolik: Email band bo'lishi mumkin."));
+            auto resp = HttpResponse::newHttpViewResponse("Register", data);
+            callback(resp);
         },
         name, email, hashed_pw
     );
